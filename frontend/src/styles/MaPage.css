@@ -1,0 +1,313 @@
+/* src/styles/MaPage.css */
+
+/* --- Fond global avec dégradé chaud --- */
+/* src/styles/MaPage.css */
+
+/* --- Bouton Menu Burger --- */
+.menu-burger {
+  position: absolute;
+  top: 40px;    /* Aligné avec le haut de ton titre */
+  right: 50px;  /* Espace par rapport au bord droit */
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;     /* Espace entre les 3 barres */
+  padding: 10px;
+  z-index: 100; /* Pour être sûr qu'il passe devant tout */
+  transition: transform 0.2s ease;
+}
+
+.menu-burger:hover {
+  transform: scale(1.1);
+}
+
+/* Style des 3 barres blanches */
+.barre {
+  width: 35px;
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+/* --- Mise à jour du Conteneur --- */
+.page-container {
+  width: 100vw; /* Prend toute la largeur de l'écran */
+  height: 100vh; /* Prend toute la hauteur de l'écran */
+  display: flex; /* Flexbox pour centrer le contenu */
+  position : relative; /* Nécessaire pour les éléments positionnés à l'intérieur */
+  flex-direction: column;
+  align-items: center;
+  /* CHANGEMENT : On utilise space-between ou padding-top pour rehausser */
+  justify-content: flex-start; 
+  padding-top: 5vh; /* Pousse tout vers le haut de 5% de la hauteur de l'écran */
+  position : relative; /* Nécessaire pour positionner le menu burger en absolu */
+  background: linear-gradient(135deg, #fd297b 0%, #ff5864 50%, #ff6b6b 100%);
+  margin: 0;
+  overflow: hidden; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page-container::before, .page-container::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  z-index: 0; /* Derrière tout */
+  filter: blur(80px);
+  opacity: 0.5;
+}
+
+.page-container::before {
+  background: #ffd3b6;
+  top: -100px;
+  left: -100px;
+}
+
+.page-container::after {
+  background: #fd297b;
+  bottom: -100px;
+  right: -100px;
+}
+
+/* --- Titre stylisé et grossi --- */
+.main-title {
+  color: white;
+  font-size: 9rem; /* Grossi (était à 2.5rem) */
+  font-weight: 900; /* Plus épais */
+  margin-bottom: 40px; /* Plus d'espace sous le titre */
+  text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  letter-spacing: -1.5px; /* Un peu plus serré pour un look pro */
+  text-transform: uppercase; /* Optionnel : pour un look très "App" */
+  margin-bottom: 80px; /* Ajuste cette valeur (100px, 120px...) pour descendre les cartes */
+}
+
+/* --- Ajustement du SPAN (le "Match") --- */
+.main-title span {
+  background: #fff;
+  color: #fd297b;
+  padding: 0 15px; /* Plus de padding pour un look plus "bouton" */
+  margin-left: 10px;
+  border-radius: 15px; /* Arrondi plus prononcé */
+  font-size: 4rem; /* Un poil plus petit que le texte principal pour le style */
+  vertical-align: middle;
+}
+
+/* --- Le conteneur qui tient les deux blocs --- */
+.split-section {
+  display: flex; 
+  flex-direction: row;
+  width: 90%;
+  max-width: 1000px; /* Un peu plus large pour l'espace au milieu */
+  height: 500px;
+  margin-bottom: 40px;
+  
+  /* C'est ici qu'on crée le vide pour voir le fond rose */
+  gap: 40px; 
+  background: transparent; /* IMPORTANT : On enlève le fond blanc ici */
+  box-shadow: none; /* On enlève l'ombre du parent */
+}
+
+/* --- La carte de l'image --- */
+.image-card {
+  flex: 1.2;
+  background: white; /* Le blanc revient ici */
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- La carte du texte --- */
+.text-card {
+  flex: 1;
+  background: white; /* Le blanc revient ici aussi */
+  padding: 40px;
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.text-card p {
+  color: #333;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+/* --- Bandeau d'icônes (Largeur fixe sous la carte) --- */
+/* Modifie ton .icon-bar actuel par celui-ci */
+.icon-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;  /* Espace entre les icônes */
+  
+  /* Le bandeau habillé */
+  background: rgba(255, 255, 255, 0.2); /* Blanc semi-transparent */
+  backdrop-filter: blur(10px);          /* Effet de flou derrière (très moderne) */
+  padding: 15px 40px;
+  border-radius: 100px;                 /* Forme pilule */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  
+  /* Positionnement */
+  margin-top: 20px; 
+  margin-bottom: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Le bouton (le cercle blanc) --- */
+.icon-btn {
+  background: white;
+  border: none;
+  cursor: pointer;
+  
+  /* On fixe la taille du cercle */
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  
+  /* Flexbox ici pour centrer l'image dans le cercle */
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 0; /* Enlève les paddings par défaut des boutons */
+  overflow: hidden; /* Sécurité pour que rien ne dépasse du cercle */
+}
+
+.icon-btn:active {
+  transform: scale(0.85);
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+/* --- L'image à l'intérieur du bouton (le réglage manuel) --- */
+.icon-btn img {
+  /* C'est ici que tu gères la taille de ton icône manuellement */
+  width: 55px; 
+  height: 55px;
+  
+  /* Empêche la déformation de ton JPG */
+  object-fit: contain; 
+  display: block;
+}
+
+.icon-btn:hover {
+  transform: scale(1.1);
+}
+
+.main-title span {
+  background: #fff;
+  color: #fd297b; /* Couleur rose du dégradé */
+  padding: 0 10px;
+  margin-left: 5px;
+  border-radius: 8px;
+}
+
+/* --- La Sidebar --- */
+/* --- La Sidebar --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  /* On utilise 100% au lieu d'un chiffre fixe pour être sûr 
+     qu'elle soit totalement sortie de l'écran, peu importe sa largeur */
+  right: -350px; /* Commence complètement à droite, hors de l'écran */
+  
+  width: 350px; /* Sa largeur réelle */
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.98); 
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+  
+  /* Transition fluide */
+  transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  
+  display: flex;
+  flex-direction: column;
+  padding: 80px 40px;
+  
+  /* On cache l'ombre quand elle est fermée pour éviter le petit trait noir au bord */
+  box-shadow: none; 
+  visibility: hidden; /* Totalement invisible pour le navigateur */
+}
+
+/* --- Classe quand le menu est OUVERT --- */
+.sidebar.open {
+  right: 0; 
+  visibility: visible; /* Devient visible */
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15); /* L'ombre n'apparaît qu'ici */
+}
+
+/* Bouton fermer (X) */
+.close-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 2.5rem;
+  cursor: pointer;
+  color: #fd297b;
+}
+
+/* Options du menu */
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.menu-options a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.4rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.menu-options a:hover {
+  color: #fd297b;
+}
+
+.menu-options hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 10px 0;
+}
+
+.logout {
+  color: #ff5864 !important;
+}
+
+/* --- L'overlay (fond flou derrière) --- */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 🔥 bloque tout débordement horizontal */
+}
