@@ -1,0 +1,131 @@
+/* On réutilise le .page-container global pour la cohérence */
+
+.page-container {
+  width: 100vw; /* Prend toute la largeur de l'écran */
+  height: 100vh; /* Prend toute la hauteur de l'écran */
+  display: flex; /* Flexbox pour centrer le contenu */
+  position : relative; /* Nécessaire pour les éléments positionnés à l'intérieur */
+  flex-direction: column;
+  align-items: center;
+  /* CHANGEMENT : On utilise space-between ou padding-top pour rehausser */
+  justify-content: flex-start; 
+  padding-top: 5vh; /* Pousse tout vers le haut de 5% de la hauteur de l'écran */
+  position : relative; /* Nécessaire pour positionner le menu burger en absolu */
+  background: linear-gradient(135deg, #fd297b 0%, #ff5864 50%, #ff6b6b 100%);
+  margin: 0;
+  overflow: hidden; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page-container::before, .page-container::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  z-index: 0; /* Derrière tout */
+  filter: blur(80px);
+  opacity: 0.5;
+}
+
+.page-container::before {
+  background: #ffd3b6;
+  top: -100px;
+  left: -100px;
+}
+
+.page-container::after {
+  background: #fd297b;
+  bottom: -100px;
+  right: -100px;
+}
+.submit-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  width: 90%;
+  max-width: 700px;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  margin-top: 20px;
+  max-height: 85vh;
+  overflow-y: auto; /* Permet de scroller dans le formulaire s'il est long */
+}
+
+.form-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.form-title span {
+  color: #fd297b;
+}
+
+.form-section {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-section h3 {
+  color: #fd297b;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 5px;
+}
+
+/* Champs de saisie stylisés */
+.input-field {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #eee;
+  border-radius: 15px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #fd297b;
+}
+
+.short-desc { height: 80px; resize: none; }
+.long-desc { height: 150px; resize: vertical; }
+
+.file-upload-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-upload-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Bouton de validation */
+.submit-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, #fd297b 0%, #ff5864 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px rgba(253, 41, 123, 0.3);
+}

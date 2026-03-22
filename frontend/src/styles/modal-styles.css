@@ -1,0 +1,276 @@
+/* --- Styles de la Modale Améliorée --- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 30px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  font-size: 1.8rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fd297b;
+  transition: all 0.2s ease;
+}
+
+.close-modal:hover {
+  background: #fd297b;
+  color: white;
+  transform: rotate(90deg);
+}
+
+/* --- Header de la modale avec image --- */
+.modal-header {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  border-radius: 30px 30px 0 0;
+  overflow: hidden;
+}
+
+.modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Badge "Voir plus" --- */
+.modal-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(253, 41, 123, 0.9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* --- Boutons de navigation image (flèches) --- */
+.modal-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fd297b;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-nav-btn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-nav-prev {
+  left: 15px;
+}
+
+.modal-nav-next {
+  right: 15px;
+}
+
+/* --- Petits points de navigation --- */
+.modal-image-counter {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.modal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.modal-dot:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.2);
+}
+
+.modal-dot.active {
+  background-color: #fd297b;
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 8px rgba(253, 41, 123, 0.6);
+}
+
+/* --- Corps de la modale --- */
+.modal-body {
+  padding: 30px;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0 0 20px 0;
+  font-weight: 700;
+}
+
+/* --- Stats de la modale --- */
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  color: #fd297b;
+  font-weight: 700;
+}
+
+/* --- Sections de contenu --- */
+.modal-section {
+  margin-bottom: 25px;
+}
+
+.modal-section h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.modal-section p {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-list li {
+  padding: 10px 0;
+  padding-left: 25px;
+  position: relative;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.modal-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #fd297b;
+  font-weight: 700;
+}
+
+/* --- Bouton d'action --- */
+.modal-action-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #fd297b 0%, #ff5864 100%);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(253, 41, 123, 0.3);
+}
+
+.modal-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(253, 41, 123, 0.4);
+}
+
+.modal-action-btn:active {
+  transform: translateY(0);
+}
+
+/* --- Scroll personnalisé --- */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #fd297b;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #ff5864;
+}
