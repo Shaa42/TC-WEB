@@ -15,10 +15,10 @@ const MaPage = ({ onNavigate }) => {
   const imagesGlob = import.meta.glob('../assets/projet/*.{png,jpg,jpeg,svg}', { eager: true });
 
   // On transforme l'objet en un tableau d'URLs utilisables
-  const projectImages = Object.values(imagesGlob).map((mod) => mod.default);
   const [projects, setProjects] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+	const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
 
   // États pour la navigation et les fenêtres
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,16 +40,25 @@ const MaPage = ({ onNavigate }) => {
 
   // Fonctions de navigation d'images
   const nextImage = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === projects.length - 1 ? 0 : prevIndex + 1
-    );
+    const images = projects[currentProjectIndex]?.images || [];
+  	setCurrentImageIndex((prev) =>
+    	prev === images.length - 1 ? 0 : prev + 1
+		);
   };
 
   const prevImage = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? projects.length - 1 : prevIndex - 1
-    );
+    const images = projects[currentProjectIndex]?.images || [];
+  	setCurrentImageIndex((prev) =>
+			prev === 0 ? images.length - 1 : prev - 1
+		);
   };
+
+	 const nextProject = () => {
+		setCurrentProjectIndex((prev) =>
+			prev === projects.length - 1 ? 0 : prev + 1
+		);
+		setCurrentImageIndex(0);
+	};
 
 	if (projects.length === 0) {
   	return <p>Loading...</p>;
@@ -91,7 +100,7 @@ const MaPage = ({ onNavigate }) => {
       {/* --- SECTION CARTES --- */}
       <div className="split-section">
         <div className="image-card">
-          <img src={projects[currentIndex]?.image} alt="Projet" />
+          <img src={projects[currentProjectIndex]?.images[currentImageIndex]} alt="Projet" />
           {/* Indicateur de position (petits points en bas de l'image) */}
           {/* <div className="image-counter">
             {projectImages.map((_, index) => (
@@ -101,8 +110,8 @@ const MaPage = ({ onNavigate }) => {
         </div>
         
         <div className="text-card">
-          <h2>{projects[currentIndex]?.title}</h2>
-          <p>{projects[currentIndex]?.description}</p>
+          <h2>{projects[currentProjectIndex]?.title}</h2>
+          <p>{projects[currentProjectIndex]?.description}</p>
         </div>
       </div>
 
@@ -113,7 +122,7 @@ const MaPage = ({ onNavigate }) => {
             <button className="close-modal" onClick={toggleModal}>✕</button>
             
             <div className="modal-header">
-              <img src={projects[currentIndex]?.image} />
+            	<img src={projects[currentProjectIndex]?.images[currentImageIndex]} />
 
               
               {/* Boutons de navigation image */}
@@ -157,23 +166,24 @@ const MaPage = ({ onNavigate }) => {
           <img src={flecheGauche} alt="Image précédente" />
         </button>
 
-        <button className="icon-btn btn-dislike" 
-				onClick={() => {
-					console.log("DISLIKE", projects[currentIndex])
-					nextImage()
-				}}>
+        <button className="icon-btn btn-undo" 
+				onClick = {nextImage}>
           <img src={flecheDroite} alt="Image suivante" />
         </button>
 
         <button className="icon-btn btn-like" 
 				onClick={() => {
-					console.log("LIKE", projects[currentIndex])
-					nextImage()
+					console.log("LIKE", projects[currentProjectIndex])
+					nextProject()
 				}}>
           <img src={iconeCoeur} alt="Cœur" />
         </button>
 
-        <button className="icon-btn btn-like" onClick={() => console.log('Croix')}>
+        <button className="icon-btn btn-dislike"
+				onClick={() => {
+					console.log("DISLIKE", projects[currentProjectIndex])
+					nextProject()
+				}}>
           <img src={croix} alt="Croix" />
         </button>
 
