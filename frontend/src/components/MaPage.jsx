@@ -64,6 +64,7 @@ const MaPage = ({ onNavigate }) => {
   >
     Déposer
   </a>
+  <a href="#Projetfav">Mes Projets Favoris</a>
           <hr />
         </nav>
       </div>
