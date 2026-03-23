@@ -91,7 +91,7 @@
   padding: 0 15px; /* Plus de padding pour un look plus "bouton" */
   margin-left: 10px;
   border-radius: 15px; /* Arrondi plus prononcé */
-  font-size: 7rem; /* Un poil plus petit que le texte principal pour le style */
+  font-size: 6.5rem; /* Un poil plus petit que le texte principal pour le style */
   vertical-align: middle;
 }
 
