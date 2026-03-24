@@ -10,15 +10,12 @@ import info from '../assets/info.svg';
 import croix from '../assets/croix.svg';
 
 const MaPage = ({ onNavigate }) => {
-  // Cette ligne scanne le dossier assets/projet et récupère toutes les images
-  // "eager: true" permet de charger les images immédiatement
-  const imagesGlob = import.meta.glob('../assets/projet/*.{png,jpg,jpeg,svg}', { eager: true });
-
   // On transforme l'objet en un tableau d'URLs utilisables
   const [projects, setProjects] = useState([]);
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-	const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // États pour la navigation et les fenêtres
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,14 +26,26 @@ const MaPage = ({ onNavigate }) => {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   useEffect(() => {
-		fetch("http://localhost:8080/api/projects")
-			.then(res => res.json())
-			.then(data => {
-				console.log("projects:", data);
-				setProjects(data);
-			})
-			.catch(err => console.error(err));
-	}, []);
+    setIsLoading(true);
+    setError(null);
+    fetch("http://localhost:8080/api/projects")
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Erreur serveur: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("projects:", data);
+        setProjects(Array.isArray(data) ? data : []);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError(err.message || "Impossible de charger les projets");
+        setIsLoading(false);
+      });
+  }, []);
 
   // Fonctions de navigation d'images
   const nextImage = () => {
@@ -60,9 +69,69 @@ const MaPage = ({ onNavigate }) => {
 		setCurrentImageIndex(0);
 	};
 
-	if (projects.length === 0) {
-  	return <p>Loading...</p>;
-	}
+  // Affichage conditionnel pour les états de chargement et d'erreur
+  if (isLoading) {
+    return (
+      <div className="page-container">
+        <div className="loading-state">
+          <h1 className="main-title">Project<span>Match</span></h1>
+          <p className="state-message">Chargement des projets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <div className="error-state">
+          <h1 className="main-title">Project<span>Match</span></h1>
+          <p className="state-message error">{error}</p>
+          <button 
+            className="retry-btn"
+            onClick={() => window.location.reload()}
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!projects || projects.length === 0) {
+    return (
+      <div className="page-container">
+        <button className="menu-burger" onClick={toggleMenu}>
+          <div className="barre"></div>
+          <div className="barre"></div>
+          <div className="barre"></div>
+        </button>
+        <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+          <button className="close-btn" onClick={toggleMenu}>x</button>
+          <nav className="menu-options">
+            <a href="#profil">Mon Profil</a>
+            <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate(); }}>Deposer</a>
+          </nav>
+        </div>
+        {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+        <div className="empty-state">
+          <h1 className="main-title">Project<span>Match</span></h1>
+          <p className="state-message">Aucun projet disponible pour le moment.</p>
+          <button 
+            className="submit-project-btn"
+            onClick={onNavigate}
+          >
+            Deposer un projet
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Get current project safely
+  const currentProject = projects[currentProjectIndex] || {};
+  const currentImages = currentProject.images || [];
+  const currentImage = currentImages[currentImageIndex] || null;
 
   return (
     <div className="page-container">
@@ -101,18 +170,24 @@ const MaPage = ({ onNavigate }) => {
       {/* --- SECTION CARTES --- */}
       <div className="split-section">
         <div className="image-card">
-          <img src={projects[currentProjectIndex]?.images[currentImageIndex]} alt="Projet" />
+          {currentImage ? (
+            <img src={currentImage} alt={currentProject.title || "Projet"} />
+          ) : (
+            <div className="no-image-placeholder">Pas d'image</div>
+          )}
           {/* Indicateur de position (petits points en bas de l'image) */}
-          {/* <div className="image-counter">
-            {projectImages.map((_, index) => (
-              <div key={index} className={`dot ${index === currentImgIndex ? 'active' : ''}`}></div>
-            ))}
-          </div> */}
+          {currentImages.length > 1 && (
+            <div className="image-counter">
+              {currentImages.map((_, index) => (
+                <div key={index} className={`dot ${index === currentImageIndex ? 'active' : ''}`}></div>
+              ))}
+            </div>
+          )}
         </div>
         
         <div className="text-card">
-          <h2>{projects[currentProjectIndex]?.title}</h2>
-          <p>{projects[currentProjectIndex]?.description}</p>
+          <h2>{currentProject.title || "Sans titre"}</h2>
+          <p>{currentProject.description || "Pas de description disponible."}</p>
         </div>
       </div>
 
@@ -120,40 +195,49 @@ const MaPage = ({ onNavigate }) => {
       {isModalOpen && (
         <div className="modal-overlay" onClick={toggleModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-modal" onClick={toggleModal}>✕</button>
+            <button className="close-modal" onClick={toggleModal}>x</button>
             
             <div className="modal-header">
-            	<img src={projects[currentProjectIndex]?.images[currentImageIndex]} />
-
+              {currentImage ? (
+                <img src={currentImage} alt={currentProject.title || "Projet"} />
+              ) : (
+                <div className="no-image-placeholder">Pas d'image</div>
+              )}
               
               {/* Boutons de navigation image */}
-              <button className="modal-nav-btn modal-nav-prev" onClick={prevImage}>‹</button>
-              <button className="modal-nav-btn modal-nav-next" onClick={nextImage}>›</button>
+              {currentImages.length > 1 && (
+                <>
+                  <button className="modal-nav-btn modal-nav-prev" onClick={prevImage}>{'<'}</button>
+                  <button className="modal-nav-btn modal-nav-next" onClick={nextImage}>{'>'}</button>
+                </>
+              )}
               
               {/* Petits points de navigation */}
-              {/* <div className="modal-image-counter">
-                {projectImages.map((_, index) => (
-                  <div 
-                    key={index} 
-                    className={`modal-dot ${index === currentImgIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentImgIndex(index)}
-                  ></div>
-                ))}
-              </div> */}
+              {currentImages.length > 1 && (
+                <div className="modal-image-counter">
+                  {currentImages.map((_, index) => (
+                    <div 
+                      key={index} 
+                      className={`modal-dot ${index === currentImageIndex ? 'active' : ''}`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    ></div>
+                  ))}
+                </div>
+              )}
             </div>
             
             <div className="modal-body">
-              <h2 className="modal-title">Nom du Projet</h2>
+              <h2 className="modal-title">{currentProject.title || "Sans titre"}</h2>
 
               <div className="modal-section">
                 <h3>Description du projet</h3>
-                <p>
-                  Ceci est la description complète et détaillée du projet. Elle présente l'idée globale, 
-                  les objectifs spécifiques et la vision à long terme. On y détaille également les besoins 
-                  techniques et les ressources requises.
-                </p>
+                <p>{currentProject.description || "Pas de description disponible."}</p>
               </div>
-              <button className="modal-action-btn" onClick={toggleModal}>
+              <button className="modal-action-btn" onClick={() => {
+                console.log("LIKE", currentProject);
+                toggleModal();
+                nextProject();
+              }}>
                 Like
               </button>
             </div>
