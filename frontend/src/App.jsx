@@ -2,22 +2,29 @@
 import React, { useState } from 'react';
 import MaPage from './components/MaPage';
 import SubmitProject from './components/SubmitProject';
+import Leaderboard from './components/Leaderboard'; // La nouvelle page
 
-// src/App.jsx
 function App() {
   const [currentPage, setCurrentPage] = useState('tinder');
 
+  // Fonction centrale pour changer de page
+  const navigate = (page) => setCurrentPage(page);
+
   return (
-    <div>
-      {currentPage === 'tinder' ? (
-        // Quand on navigue depuis MaPage, on veut aller sur 'submit'
-        <MaPage onNavigate={() => setCurrentPage('submit')} />
-      ) : (
-        // Quand on clique sur Retour depuis SubmitProject, on veut revenir sur 'tinder'
-        <SubmitProject onBack={() => setCurrentPage('tinder')} />
+    <div className="app-wrapper">
+      {currentPage === 'tinder' && (
+        <MaPage onNavigate={navigate} />
+      )}
+      
+      {currentPage === 'submit' && (
+        <SubmitProject onBack={() => navigate('tinder')} onNavigate={navigate} />
+      )}
+
+      {currentPage === 'leaderboard' && (
+        <Leaderboard onBack={() => navigate('tinder')} onNavigate={navigate} />
       )}
     </div>
   );
 }
 
-export default App; 
+export default App;

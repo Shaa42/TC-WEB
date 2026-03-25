@@ -1,0 +1,106 @@
+/* --- Titres de colonnes stylisés façon Tinder Logo --- */
+.column-header-title {
+  font-size: 2rem;
+  font-weight: 850;
+  padding: 12px 30px;
+  border-radius: 50px; /* Forme pilule */
+  margin-bottom: 40px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.top-title {
+  background: white;
+  color: #fd297b; /* Rose Tinder */
+}
+
+.flop-title {
+  background: #333; /* Noir pour le côté sombre */
+  color: white;
+}
+
+/* --- Espacement de la grille --- */
+.split-ranking {
+  display: flex;
+  width: 100%;
+  max-width: 1300px;
+  gap: 60px; /* Plus d'espace entre les deux colonnes */
+  padding: 0 20px 60px 20px;
+  justify-content: center; /* Centrer les colonnes */
+}
+
+.ranking-column {
+  flex: 0 0 400px; /* Largeur fixe pour chaque colonne */
+  max-width: 400px;
+}
+
+.cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Plus d'espace vertical entre les bulles */
+  width: 100%;
+}
+
+/* --- Cartes (Bulles de classement) --- */
+.rank-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px; /* Plus arrondi */
+  padding: 35px; /* Plus de respiration interne */
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rank-card:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- Numéros géants --- */
+.rank-badge {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: white;
+  opacity: 0.4;
+  min-width: 80px;
+}
+
+.card-content h3 {
+  font-size: 2rem; /* Titre plus gros */
+  margin: 5px 0 15px 0;
+  color: white;
+  font-weight: 700;
+}
+
+/* --- Détails --- */
+.category-badge {
+  background: white;
+  color: #fd297b;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+
+.stat-bar {
+  height: 10px; /* Barre un peu plus épaisse */
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+/* --- Couleurs de barres --- */
+.stat-fill.likes { background: #20E3B2; }
+.stat-fill.dislikes { background: #ff4b2b; }
+
+.stat-text {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  opacity: 0.9;
+}
