@@ -45,11 +45,36 @@ func GetProjects(c *gin.Context) {
 }
 
 func PostProjects(c *gin.Context) {
-	var newProject map[string]any
+	title := c.PostForm("title")
+	description := c.PostForm("description")
 
-	if err := c.BindJSON(&newProject); err != nil {
-		c.JSON(400, gin.H{"error": "invalid"})
+	if title == "" || description == "" {
+		c.JSON(400, gin.H{"error": "titre et description requis"})
 		return
+	}
+
+	newProject := map[string]any{
+		"title":       title,
+		"description": description,
+		"images":      []string{},
+	}
+
+	// Création du dossier uploads s'il n'existe pas
+	os.MkdirAll("uploads", os.ModePerm)
+
+	form, err := c.MultipartForm()
+	if err == nil {
+		files := form.File["images"]
+		var imageUrls []string
+
+		for _, file := range files {
+			filepath := "uploads/" + file.Filename
+			if err := c.SaveUploadedFile(file, filepath); err == nil {
+				// L'URL d'accès qui sera utilisée par le frontend
+				imageUrls = append(imageUrls, "http://localhost:8080/"+filepath)
+			}
+		}
+		newProject["images"] = imageUrls
 	}
 
 	projects := LoadProjects()

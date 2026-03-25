@@ -48,6 +48,10 @@ func main() {
 
 	// interdomain
 	r.Use(request.InterdomainUse)
+
+	// static files (images uploads)
+	r.Static("/uploads", "./uploads")
+
 	r.GET("/api/projects", request.GetProjects)
 	r.POST("/api/projects", request.PostProjects)
 	r.Run(":8080")

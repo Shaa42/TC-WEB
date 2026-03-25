@@ -152,11 +152,23 @@ const MaPage = ({ onNavigate }) => {
     href="#Déposer" 
     onClick={(e) => { 
       e.preventDefault(); // Empêche le comportement par défaut du lien
-      onNavigate();       // Appelle la fonction de App.jsx pour changer de page
+      onNavigate('submit');       // Appelle la fonction de App.jsx pour changer de page
     }}
   >
     Déposer
   </a>
+
+          <a 
+            href="#Classement" 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              onNavigate('leaderboard'); 
+            }}
+          >
+            Classement
+          </a>
+          <hr />
+
   <a href="#Projetfav">Mes Projets Favoris</a>
           <hr />
         </nav>

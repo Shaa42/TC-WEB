@@ -7,6 +7,7 @@ const SubmitProject = ({ onBack }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
+  const [videoFile, setVideoFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -14,7 +15,7 @@ const SubmitProject = ({ onBack }) => {
   // Fonctions de bascule (Toggle)
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validation basique
@@ -30,35 +31,44 @@ const SubmitProject = ({ onBack }) => {
     setIsSubmitting(true);
     setError(null);
 
-    fetch("http://localhost:8080/api/projects", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: title.trim(),
-        description: description.trim(),
-        images,
-      }),
-    })
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`Erreur serveur: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then(data => {
-        console.log("Saved:", data);
-        setSuccess(true);
-        setTimeout(() => {
-          onBack(); // retour a l'acceuil apres 1 seconde
-        }, 1000);
-      })
-      .catch(err => {
-        console.error(err);
-        setError(err.message || "Impossible de publier le projet. Veuillez reessayer.");
-        setIsSubmitting(false);
+    // --- NOUVELLE MÉTHODE : FORMDATA ---
+    const formData = new FormData();
+    formData.append('title', title.trim());
+    formData.append('description', description.trim());
+    
+    // Ajouter les images (fichiers réels)
+    images.forEach((file, index) => {
+      formData.append('images', file);
+    });
+    
+    // Ajouter la vidéo si elle existe
+    if (videoFile) {
+      formData.append('video', videoFile); 
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/api/projects", {
+        method: "POST",
+        // ATTENTION : Ne pas mettre de 'Content-Type': 'application/json'
+        // Le navigateur va le faire tout seul et ajouter le "boundary" nécessaire
+        body: formData, 
       });
+
+      if (!response.ok) {
+        throw new Error(`Erreur serveur: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Saved:", data);
+      setSuccess(true);
+      setTimeout(() => {
+        onBack(); // retour a l'acceuil apres 1 seconde
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Impossible de publier le projet. Veuillez reessayer.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -140,21 +150,26 @@ const SubmitProject = ({ onBack }) => {
 							accept="image/*"
 							onChange={(e) => {
 								const files = Array.from(e.target.files);
-								const urls = files.map(file => URL.createObjectURL(file));
-								setImages(urls);
+								setImages(files); // Stocker les File objets directement
 							}}/>
             </div>
           </div>
+
+        
 
           {/* --- SECTION DÉTAILLÉE (Ce qui s'affiche au clic sur "Info") --- */}
           <div className="form-section">
             <h3>Détails supplémentaires</h3>
             <textarea placeholder="Explication complète du projet, objectifs, besoins..." className="input-field long-desc"></textarea>
-            
-            <div className="file-upload-group">
-              <label>Vidéo de présentation (Optionnel)</label>
-              <input type="file" accept="video/*" />
-            </div>
+
+          <div className="file-upload-group">
+            <label>Vidéo de présentation (Optionnel)</label>
+            <input 
+              type="file" 
+              accept="video/*" 
+              onChange={(e) => setVideoFile(e.target.files[0])} // On prend le 1er fichier
+            />
+          </div>
           </div>
 
           <button 
