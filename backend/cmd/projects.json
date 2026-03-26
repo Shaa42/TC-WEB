@@ -11,9 +11,9 @@
   {
     "description": " La synthèse sonore embarquée impose des contraintes fortes de latence et d’optimisation des ressources.\n\nCe projet développe une architecture temps réel basée sur Teensy 4.0 et Faust pour simuler le timbre polyphonique d’une guitare via le modèle Karplus-Strong, avec planification non bloquante et visualisation synchronisée.",
     "images": [
-      "blob:http://localhost:5173/a035a6f9-a203-4bfb-a426-9e90d8da719b",
-      "blob:http://localhost:5173/676996d1-2596-4bfc-b38b-302331b2be56",
-      "blob:http://localhost:5173/8b71e880-102c-455a-a243-782112efc915"
+      "http://localhost:5173/a035a6f9-a203-4bfb-a426-9e90d8da719b",
+      "http://localhost:5173/676996d1-2596-4bfc-b38b-302331b2be56",
+      "http://localhost:5173/8b71e880-102c-455a-a243-782112efc915"
     ],
     "title": "Simulation embarquée  de guitare et visualisation en temp réel"
   }

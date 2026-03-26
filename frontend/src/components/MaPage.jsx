@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/MaPage.css';
 import '../styles/modal-styles.css';
 
@@ -8,6 +8,7 @@ import flecheGauche from '../assets/fleche_gauche.svg';
 import flecheDroite from '../assets/fleche_droite.svg'; 
 import info from '../assets/info.svg';
 import croix from '../assets/croix.svg';
+import TinderCard from 'react-tinder-card'
 
 const MaPage = ({ onNavigate }) => {
   // On transforme l'objet en un tableau d'URLs utilisables
@@ -24,6 +25,9 @@ const MaPage = ({ onNavigate }) => {
   // Fonctions de bascule (Toggle)
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+	// References des cartes
+	const childRefs = useRef([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -67,6 +71,14 @@ const MaPage = ({ onNavigate }) => {
 			prev === projects.length - 1 ? 0 : prev + 1
 		);
 		setCurrentImageIndex(0);
+	};
+
+	const swipe = async (dir) => {
+		const topIndex = visibleProjects.length - 1;
+
+		if (childRefs.current[topIndex]) {
+			await childRefs.current[topIndex].swipe(dir);
+		}
 	};
 
   // Affichage conditionnel pour les états de chargement et d'erreur
@@ -132,6 +144,9 @@ const MaPage = ({ onNavigate }) => {
   const currentProject = projects[currentProjectIndex] || {};
   const currentImages = currentProject.images || [];
   const currentImage = currentImages[currentImageIndex] || null;
+	const visibleProjects = [0,1,2].map(i => 
+		projects[(currentProjectIndex + i) % projects.length]
+	)
 
   return (
     <div className="page-container">
@@ -168,28 +183,81 @@ const MaPage = ({ onNavigate }) => {
       <h1 className="main-title">Project<span>Match</span></h1>
 
       {/* --- SECTION CARTES --- */}
-      <div className="split-section">
-        <div className="image-card">
-          {currentImage ? (
-            <img src={currentImage} alt={currentProject.title || "Projet"} />
-          ) : (
-            <div className="no-image-placeholder">Pas d'image</div>
-          )}
-          {/* Indicateur de position (petits points en bas de l'image) */}
-          {currentImages.length > 1 && (
-            <div className="image-counter">
-              {currentImages.map((_, index) => (
-                <div key={index} className={`dot ${index === currentImageIndex ? 'active' : ''}`}></div>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        <div className="text-card">
-          <h2>{currentProject.title || "Sans titre"}</h2>
-          <p>{currentProject.description || "Pas de description disponible."}</p>
-        </div>
-      </div>
+			<div className="cardContainer">
+				{visibleProjects.map((project, index) => {
+					const images = project.images || []
+					const image = 
+						index === visibleProjects.length - 1
+							? images[currentImageIndex]
+							: images[0]
+
+					return (
+						<TinderCard
+							ref={(el) => (childRefs.current[index] = el)}
+							className = "swipe"
+							key={currentProjectIndex + '-' + index}
+							onSwipe={(dir) => {
+								console.log("swiped:", dir)
+							}}
+							onCardLeftScreen={() => {
+								if (index === visibleProjects.length - 1) {
+									nextProject();
+									setCurrentImageIndex(0);
+								}
+							}}
+							preventSwipe={['up', 'down']}
+						>
+							<div className={`card card-${index}`}>
+								<div className="split-section">
+									<div className="image-card">
+										{image ? (
+											<img src={image} alt={project.title} />
+										) : (
+											<div className="no-image-placeholder">Pas d'image</div>
+										)}
+									</div>
+
+									<div className="text-card">
+										<h2>{project.title}</h2>
+										<p>{project.description}</p>
+									</div>
+								</div>
+							</div>
+						</TinderCard>
+					)
+				})}
+				{/* <TinderCard
+					key={currentProject._id}
+					onSwipe={(dir) => {
+						console.log("swiped:", dir)
+						nextProject()
+					}}
+					preventSwipe={['up', 'down']}
+				>
+					<div className='card'>
+						<div className="image-card">
+							{currentImage ? (
+								<img src={currentImage} alt={currentProject.title || "Projet"} />
+							) : (
+								<div className="no-image-placeholder">Pas d'image</div>
+							)} */}
+							{/* Indicateur de position (petits points en bas de l'image) */}
+							{/* {currentImages.length > 1 && (
+								<div className="image-counter">
+									{currentImages.map((_, index) => (
+										<div key={index} className={`dot ${index === currentImageIndex ? 'active' : ''}`}></div>
+									))}
+								</div>
+							)}
+						</div>
+						
+						<div className="text-card">
+							<h2>{currentProject.title || "Sans titre"}</h2>
+							<p>{currentProject.description || "Pas de description disponible."}</p>
+						</div>
+					</div>
+				</TinderCard> */}
+			</div>
 
       {/* --- MODALE DÉTAILS (INFO) --- */}
       {isModalOpen && (
@@ -256,19 +324,17 @@ const MaPage = ({ onNavigate }) => {
           <img src={flecheDroite} alt="Image suivante" />
         </button>
 
-        <button className="icon-btn btn-like" 
-				onClick={() => {
-					console.log("LIKE", projects[currentProjectIndex])
-					nextProject()
-				}}>
+        <button 
+					className="icon-btn btn-like" 
+					onClick={() => swipe('right')}
+				>
           <img src={iconeCoeur} alt="Cœur" />
         </button>
 
-        <button className="icon-btn btn-dislike"
-				onClick={() => {
-					console.log("DISLIKE", projects[currentProjectIndex])
-					nextProject()
-				}}>
+        <button 
+					className="icon-btn btn-dislike"
+					onClick={() => swipe('left')}
+				>
           <img src={croix} alt="Croix" />
         </button>
 
