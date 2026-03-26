@@ -20,7 +20,14 @@
     },
     {
         "description": "Waw",
-        "images": "http://localhost:8080/uploads/13.png",
+        "images": ["http://localhost:8080/uploads/13.png"],
         "title": "Interstellaire"
+    },
+    {
+        "description": "Project description",
+        "images": [
+            "http://localhost:8080/uploads/68a503d245800db249bd5bd751787b89.jpg"
+        ],
+        "title": "Handle name"
     }
 ]
