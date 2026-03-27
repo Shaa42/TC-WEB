@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Leaderboard.css";
+import "../styles/SubmitProject.css";
 
-const Leaderboard = ({ onBack }) => {
+const Leaderboard = ({ onBack, onNavigate }) => {
     const [topProjects, setTopProjects] = useState([]);
     const [flopProjects, setFlopProjects] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -128,29 +129,38 @@ const Leaderboard = ({ onBack }) => {
     }, []);
 
     return (
-        <div className="page-container leaderboard-page">
-            <button className="menu-burger" onClick={toggleMenu}>
-                <div className="barre"></div>
-                <div className="barre"></div>
-                <div className="barre"></div>
-            </button>
+        <div className="page-container">
+      
+      {/* --- MENU BURGER --- */}
+      <button className="menu-burger" onClick={toggleMenu}>
+        <div className="barre"></div>
+        <div className="barre"></div>
+        <div className="barre"></div>
+      </button>
 
-            <div className={`sidebar ${isMenuOpen ? "open" : ""}`}>
-                <button className="close-btn" onClick={toggleMenu}>
-                    ×
-                </button>
-                <nav className="menu-options">
-                    <a
-                        href="#projets"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onBack();
-                        }}
-                    >
-                        🔥 Retour au Swipe
-                    </a>
-                </nav>
-            </div>
+      {/* --- SIDEBAR --- */}
+      <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+        <button className="close-btn" onClick={toggleMenu}>×</button>
+        <nav className="menu-options">
+          <a href="#profil">Mon Profil</a>
+          <a 
+            href="#projets" 
+            onClick={(e) => {
+              e.preventDefault();
+              toggleMenu(); // Ferme le menu
+              onBack(); // Retour à la page Tinder
+            }}
+          >
+            Projets
+          </a>
+           <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate(); }}>Deposer</a>
+          <hr />
+         
+        </nav>
+      </div>
+
+      {/* Overlay pour fermer le menu au clic extérieur */}
+      {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
 
             {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
 
@@ -162,7 +172,7 @@ const Leaderboard = ({ onBack }) => {
                 {/* TOP COLUMN */}
                 <div className="ranking-column">
                     <h2 className="column-header-title top-title">
-                        🔥 Top Impact
+                        Top <span>5</span> Projets
                     </h2>
                     <div className="cards-stack">
                         {topProjects.map((project, index) => (
@@ -180,7 +190,7 @@ const Leaderboard = ({ onBack }) => {
                                         <div
                                             className="stat-fill likes"
                                             style={{
-                                                width: `${(project.likes / 1500) * 100}%`,
+                                                width: `${(project.likes / 100) * 100}%`,
                                             }}
                                         ></div>
                                     </div>
@@ -196,7 +206,7 @@ const Leaderboard = ({ onBack }) => {
                 {/* FLOP COLUMN */}
                 <div className="ranking-column">
                     <h2 className="column-header-title flop-title">
-                        💀 Gros Flops
+                        Top <span>5</span> Flops 
                     </h2>
                     <div className="cards-stack">
                         {flopProjects.map((project, index) => (
@@ -214,7 +224,7 @@ const Leaderboard = ({ onBack }) => {
                                         <div
                                             className="stat-fill dislikes"
                                             style={{
-                                                width: `${(project.dislikes / 2500) * 100}%`,
+                                                width: `${(project.dislikes / 100) * 100}%`,
                                             }}
                                         ></div>
                                     </div>

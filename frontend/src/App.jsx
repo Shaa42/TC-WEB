@@ -21,8 +21,11 @@ function App() {
       )}
 
       {currentPage === 'leaderboard' && (
-        <Leaderboard onBack={() => navigate('tinder')} onNavigate={navigate} />
-      )}
+  <Leaderboard 
+    onBack={() => navigate('tinder')} 
+    onNavigate={() => navigate('submit')} // <-- On précise 'submit' ici
+  />
+)}
     </div>
   );
 }
