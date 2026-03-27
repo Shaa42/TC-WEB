@@ -215,6 +215,18 @@ const MaPage = ({ onNavigate }) => {
 										) : (
 											<div className="no-image-placeholder">Pas d'image</div>
 										)}
+										
+										{index === visibleProjects.length - 1 && images.length > 1 && (
+											<div className="image-counter">
+												{images.map((_, i) => (
+													<div
+														key={i}
+														className={`dot ${i === currentImageIndex ? 'active' : ''}`}
+														onClick={() => setCurrentImageIndex(i)}
+													/>
+												))}
+											</div>
+										)}
 									</div>
 
 									<div className="text-card">
