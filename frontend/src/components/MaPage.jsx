@@ -118,34 +118,37 @@ const MaPage = ({ onNavigate }) => {
   }
 
   if (!projects || projects.length === 0) {
-    return (
-      <div className="page-container">
-        <button className="menu-burger" onClick={toggleMenu}>
-          <div className="barre"></div>
-          <div className="barre"></div>
-          <div className="barre"></div>
-        </button>
-        <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
-          <button className="close-btn" onClick={toggleMenu}>x</button>
-          <nav className="menu-options">
-            <a href="#profil">Mon Profil</a>
-            <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate(); }}>Deposer</a>
-          </nav>
-        </div>
-        {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
-        <div className="empty-state">
-          <h1 className="main-title">Project<span>Match</span></h1>
-          <p className="state-message">Aucun projet disponible pour le moment.</p>
-          <button 
-            className="submit-project-btn"
-            onClick={onNavigate}
-          >
-            Deposer un projet
-          </button>
-        </div>
+  return (
+    <div className="page-container">
+      <button className="menu-burger" onClick={toggleMenu}>
+        <div className="barre"></div>
+        <div className="barre"></div>
+        <div className="barre"></div>
+      </button>
+
+      <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+        <button className="close-btn" onClick={toggleMenu}>×</button>
+        <nav className="menu-options">
+          <a href="#profil">Mon Profil</a>
+          {/* On ajoute les liens manquants ici aussi */}
+          <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate('submit'); }}>Déposer</a>
+          <a href="#Classement" onClick={(e) => { e.preventDefault(); onNavigate('leaderboard'); }}>Classement</a>
+          <hr />
+        </nav>
       </div>
-    );
-  }
+
+      {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+
+      <div className="empty-state">
+        <h1 className="main-title">Project<span>Match</span></h1>
+        <p className="state-message">Aucun projet disponible pour le moment.</p>
+        <button className="submit-project-btn" onClick={() => onNavigate('submit')}>
+          Déposer un projet
+        </button>
+      </div>
+    </div>
+  );
+}
 
   const noMoreProjects = !hasMoreProjects || currentProjectIndex >= projects.length;
 
@@ -203,11 +206,23 @@ const MaPage = ({ onNavigate }) => {
     href="#Déposer" 
     onClick={(e) => { 
       e.preventDefault(); // Empêche le comportement par défaut du lien
-      onNavigate();       // Appelle la fonction de App.jsx pour changer de page
+      onNavigate('submit');       // Appelle la fonction de App.jsx pour changer de page
     }}
   >
     Déposer
   </a>
+
+          <a 
+            href="#Classement" 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              onNavigate('leaderboard'); 
+            }}
+          >
+            Classement
+          </a>
+          <hr />
+
   <a href="#Projetfav">Mes Projets Favoris</a>
           <hr />
         </nav>

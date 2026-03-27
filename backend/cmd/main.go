@@ -1,67 +1,58 @@
 package main
 
 import (
-	"encoding/json"
-	"os"
+	"context"
+	"log"
+
+	"tc-web/internal/request"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-func loadProjects() []gin.H {
-	file, err := os.ReadFile("projects.json")
-
+func main() {
+	err := godotenv.Load(".env")
 	if err != nil {
-		return []gin.H{}
+		log.Fatal("Couldn't open env file")
 	}
 
-	var projects []gin.H
-	json.Unmarshal(file, &projects)
+	// Create a new client and connect to the server
+	client, err := request.ConnDB("DB_SRV_STRING")
 
-	return projects
-}
+	// Disconnect the client when the program end
+	defer func() {
+		if err = client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 
-func saveProjects(projects []gin.H) {
-	data, _ := json.MarshalIndent(projects, "", "  ")
-	os.WriteFile("projects.json", data, 0644)
-}
+	// Request users collection
+	// usersCollection := client.Database("sample_mflix").Collection("users")
+	// cursor, err := usersCollection.Find(context.TODO(), bson.D{})
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer cursor.Close(context.TODO())
 
-func main() {
+	// var users []bson.M
+	// if err := cursor.All(context.TODO(), &users); err != nil {
+	// 	panic(err)
+	// }
+
+	// if users == nil {
+	// 	users = []bson.M{}
+	// }
+
+	// API
 	r := gin.Default()
 
 	// interdomain
-	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	r.Use(request.InterdomainUse)
 
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(200)
-			return
-		}
+	// static files (images uploads)
+	r.Static("/uploads", "./uploads")
 
-		c.Next()
-	})
-
-	// API
-	r.GET("/api/projects", func(c *gin.Context) {
-		projects := loadProjects()
-		c.JSON(200, projects)
-	})
-
-	r.POST("/api/projects", func(c *gin.Context) {
-		var newProject map[string]interface{}
-
-		if err := c.BindJSON(&newProject); err != nil {
-			c.JSON(400, gin.H{"error": "invalid"})
-			return
-		}
-
-		projects := loadProjects()
-		projects = append(projects, newProject)
-		saveProjects(projects)
-
-		c.JSON(200, newProject)
-	})
-
+	r.GET("/api/projects", request.GetProjects)
+	r.POST("/api/projects", request.PostProjects)
 	r.Run(":8080")
 }
