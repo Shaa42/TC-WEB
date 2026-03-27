@@ -110,35 +110,7 @@ const MaPage = ({ onNavigate }) => {
     );
   }
 
-  if (!projects || projects.length === 0) {
-    return (
-      <div className="page-container">
-        <button className="menu-burger" onClick={toggleMenu}>
-          <div className="barre"></div>
-          <div className="barre"></div>
-          <div className="barre"></div>
-        </button>
-        <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
-          <button className="close-btn" onClick={toggleMenu}>x</button>
-          <nav className="menu-options">
-            <a href="#profil">Mon Profil</a>
-            <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate(); }}>Deposer</a>
-          </nav>
-        </div>
-        {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
-        <div className="empty-state">
-          <h1 className="main-title">Project<span>Match</span></h1>
-          <p className="state-message">Aucun projet disponible pour le moment.</p>
-          <button 
-            className="submit-project-btn"
-            onClick={onNavigate}
-          >
-            Deposer un projet
-          </button>
-        </div>
-      </div>
-    );
-  }
+  
 
   // Get current project safely
   const currentProject = projects[currentProjectIndex] || {};
@@ -146,7 +118,7 @@ const MaPage = ({ onNavigate }) => {
   const currentImage = currentImages[currentImageIndex] || null;
 	const visibleProjects = [0,1,2].map(i => 
 		projects[(currentProjectIndex + i) % projects.length]
-	)
+	).reverse(); // On inverse pour que le projet actuel soit au-dessus
 
   return (
     <div className="page-container">
