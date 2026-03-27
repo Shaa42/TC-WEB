@@ -21,6 +21,7 @@ const MaPage = ({ onNavigate }) => {
   // États pour la navigation et les fenêtres
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
   // Fonctions de bascule (Toggle)
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -41,7 +42,9 @@ const MaPage = ({ onNavigate }) => {
       })
       .then(data => {
         console.log("projects:", data);
-        setProjects(Array.isArray(data) ? data : []);
+        const loadedProjects = Array.isArray(data) ? data : [];
+        setProjects(loadedProjects);
+        setHasMoreProjects(loadedProjects.length > 0);
         setIsLoading(false);
       })
       .catch(err => {
@@ -67,9 +70,13 @@ const MaPage = ({ onNavigate }) => {
   };
 
 	 const nextProject = () => {
-		setCurrentProjectIndex((prev) =>
-			prev === projects.length - 1 ? 0 : prev + 1
-		);
+		setCurrentProjectIndex((prev) => {
+			if (prev >= projects.length - 1) {
+				setHasMoreProjects(false);
+				return prev;
+			}
+			return prev + 1;
+		});
 		setCurrentImageIndex(0);
 	};
 
@@ -143,13 +150,42 @@ const MaPage = ({ onNavigate }) => {
   );
 }
 
+  const noMoreProjects = !hasMoreProjects || currentProjectIndex >= projects.length;
+
+  if (noMoreProjects) {
+    return (
+      <div className="page-container">
+        <button className="menu-burger" onClick={toggleMenu}>
+          <div className="barre"></div>
+          <div className="barre"></div>
+          <div className="barre"></div>
+        </button>
+        <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+          <button className="close-btn" onClick={toggleMenu}>×</button>
+          <nav className="menu-options">
+            <a href="#profil">Mon Profil</a>
+            <a href="#Déposer" onClick={(e) => { e.preventDefault(); onNavigate('submit'); }}>Déposer</a>
+            <a href="#Classement" onClick={(e) => { e.preventDefault(); onNavigate('leaderboard'); }}>Classement</a>
+          </nav>
+        </div>
+        {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+        <div className="empty-state">
+          <h1 className="main-title">Project<span>Match</span></h1>
+          <p className="state-message">Aucun projet disponible.</p>
+          <button className="submit-project-btn" onClick={() => onNavigate('submit')}>Déposer un projet</button>
+        </div>
+      </div>
+    );
+  }
+
   // Get current project safely
   const currentProject = projects[currentProjectIndex] || {};
   const currentImages = currentProject.images || [];
   const currentImage = currentImages[currentImageIndex] || null;
-	const visibleProjects = [0,1,2].map(i => 
-		projects[(currentProjectIndex + i) % projects.length]
-	).reverse(); // On inverse pour que le projet actuel soit au-dessus
+  const visibleProjects = [0,1,2]
+    .map(i => projects[currentProjectIndex + i])
+    .filter(Boolean)
+    .reverse();
 
   return (
     <div className="page-container">
@@ -255,37 +291,6 @@ const MaPage = ({ onNavigate }) => {
 						</TinderCard>
 					)
 				})}
-				{/* <TinderCard
-					key={currentProject._id}
-					onSwipe={(dir) => {
-						console.log("swiped:", dir)
-						nextProject()
-					}}
-					preventSwipe={['up', 'down']}
-				>
-					<div className='card'>
-						<div className="image-card">
-							{currentImage ? (
-								<img src={currentImage} alt={currentProject.title || "Projet"} />
-							) : (
-								<div className="no-image-placeholder">Pas d'image</div>
-							)} */}
-							{/* Indicateur de position (petits points en bas de l'image) */}
-							{/* {currentImages.length > 1 && (
-								<div className="image-counter">
-									{currentImages.map((_, index) => (
-										<div key={index} className={`dot ${index === currentImageIndex ? 'active' : ''}`}></div>
-									))}
-								</div>
-							)}
-						</div>
-						
-						<div className="text-card">
-							<h2>{currentProject.title || "Sans titre"}</h2>
-							<p>{currentProject.description || "Pas de description disponible."}</p>
-						</div>
-					</div>
-				</TinderCard> */}
 			</div>
 
       {/* --- MODALE DÉTAILS (INFO) --- */}
