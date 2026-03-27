@@ -29,3 +29,21 @@ func ConnDB(srvString string) (*mongo.Client, error) {
 
 	return client, err
 }
+
+var projectsCollection *mongo.Collection
+
+func InitProjectCollection(client *mongo.Client) {
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = "projectdb"
+	}
+	collectionName := os.Getenv("PROJECTS_COLLECTION")
+	if collectionName == "" {
+		collectionName = "projects"
+	}
+	projectsCollection = client.Database(dbName).Collection(collectionName)
+}
+
+func GetProjectsCollection() *mongo.Collection {
+	return projectsCollection
+}

@@ -9,6 +9,8 @@ import flecheDroite from '../assets/fleche_droite.svg';
 import info from '../assets/info.svg';
 import croix from '../assets/croix.svg';
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
+
 const MaPage = ({ onNavigate }) => {
   // On transforme l'objet en un tableau d'URLs utilisables
   const [projects, setProjects] = useState([]);
@@ -28,21 +30,20 @@ const MaPage = ({ onNavigate }) => {
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-    fetch("http://localhost:8080/api/projects")
-      .then(res => {
+    fetch(`${API_BASE}/api/projects`)
+      .then((res) => {
         if (!res.ok) {
           throw new Error(`Erreur serveur: ${res.status}`);
         }
         return res.json();
       })
-      .then(data => {
-        console.log("projects:", data);
+      .then((data) => {
         setProjects(Array.isArray(data) ? data : []);
         setIsLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
-        setError(err.message || "Impossible de charger les projets");
+        setError(err.message || 'Impossible de charger les projets');
         setIsLoading(false);
       });
   }, []);
@@ -62,12 +63,42 @@ const MaPage = ({ onNavigate }) => {
 		);
   };
 
-	 const nextProject = () => {
+   const nextProject = () => {
 		setCurrentProjectIndex((prev) =>
 			prev === projects.length - 1 ? 0 : prev + 1
 		);
 		setCurrentImageIndex(0);
 	};
+
+  const handleReaction = async (action) => {
+    const project = projects[currentProjectIndex];
+    if (!project?.id) {
+      nextProject();
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/projects/${project.id}/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du projet');
+      }
+      const updatedProject = await response.json();
+      setProjects((prev) => {
+        const next = [...prev];
+        next[currentProjectIndex] = updatedProject;
+        return next;
+      });
+    } catch (reactionErr) {
+      console.error(reactionErr);
+    }
+
+    nextProject();
+  };
 
   // Affichage conditionnel pour les états de chargement et d'erreur
   if (isLoading) {
@@ -245,11 +276,13 @@ const MaPage = ({ onNavigate }) => {
                 <h3>Description du projet</h3>
                 <p>{currentProject.description || "Pas de description disponible."}</p>
               </div>
-              <button className="modal-action-btn" onClick={() => {
-                console.log("LIKE", currentProject);
-                toggleModal();
-                nextProject();
-              }}>
+              <button
+                className="modal-action-btn"
+                onClick={() => {
+                  toggleModal();
+                  handleReaction('like');
+                }}
+              >
                 Like
               </button>
             </div>
@@ -269,18 +302,12 @@ const MaPage = ({ onNavigate }) => {
         </button>
 
         <button className="icon-btn btn-like" 
-				onClick={() => {
-					console.log("LIKE", projects[currentProjectIndex])
-					nextProject()
-				}}>
+          onClick={() => handleReaction('like')}>
           <img src={iconeCoeur} alt="Cœur" />
         </button>
 
         <button className="icon-btn btn-dislike"
-				onClick={() => {
-					console.log("DISLIKE", projects[currentProjectIndex])
-					nextProject()
-				}}>
+          onClick={() => handleReaction('dislike')}>
           <img src={croix} alt="Croix" />
         </button>
 

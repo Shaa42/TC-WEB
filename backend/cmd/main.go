@@ -18,6 +18,7 @@ func main() {
 
 	// Create a new client and connect to the server
 	client, err := request.ConnDB("DB_SRV_STRING")
+	request.InitProjectCollection(client)
 
 	// Disconnect the client when the program end
 	defer func() {
@@ -54,5 +55,7 @@ func main() {
 
 	r.GET("/api/projects", request.GetProjects)
 	r.POST("/api/projects", request.PostProjects)
+	r.POST("/api/projects/:id/like", request.LikeProject)
+	r.POST("/api/projects/:id/dislike", request.DislikeProject)
 	r.Run(":8080")
 }
