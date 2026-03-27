@@ -110,7 +110,38 @@ const MaPage = ({ onNavigate }) => {
     );
   }
 
-  
+  if (!projects || projects.length === 0) {
+  return (
+    <div className="page-container">
+      <button className="menu-burger" onClick={toggleMenu}>
+        <div className="barre"></div>
+        <div className="barre"></div>
+        <div className="barre"></div>
+      </button>
+
+      <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
+        <button className="close-btn" onClick={toggleMenu}>×</button>
+        <nav className="menu-options">
+          <a href="#profil">Mon Profil</a>
+          {/* On ajoute les liens manquants ici aussi */}
+          <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate('submit'); }}>Déposer</a>
+          <a href="#Classement" onClick={(e) => { e.preventDefault(); onNavigate('leaderboard'); }}>Classement</a>
+          <hr />
+        </nav>
+      </div>
+
+      {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+
+      <div className="empty-state">
+        <h1 className="main-title">Project<span>Match</span></h1>
+        <p className="state-message">Aucun projet disponible pour le moment.</p>
+        <button className="submit-project-btn" onClick={() => onNavigate('submit')}>
+          Déposer un projet
+        </button>
+      </div>
+    </div>
+  );
+}
 
   // Get current project safely
   const currentProject = projects[currentProjectIndex] || {};
