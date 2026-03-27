@@ -196,6 +196,8 @@ const MaPage = ({ onNavigate }) => {
 							ref={(el) => (childRefs.current[index] = el)}
 							className = "swipe"
 							key={currentProjectIndex + '-' + index}
+							swipeRequirementType="position"
+							swipeThreshold={80}
 							onSwipe={(dir) => {
 								console.log("swiped:", dir)
 							}}
