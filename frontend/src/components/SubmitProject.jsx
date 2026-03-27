@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/SubmitProject.css';
 
-const SubmitProject = ({ onBack }) => {
+const SubmitProject = ({ onBack, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -95,6 +95,15 @@ const SubmitProject = ({ onBack }) => {
             }}
           >
             Projets
+          </a>
+          <a 
+            href="#Classement" 
+            onClick={(e) => { 
+              e.preventDefault(); 
+              onNavigate('leaderboard'); 
+            }}
+          >
+            Classement
           </a>
           <hr />
         </nav>
