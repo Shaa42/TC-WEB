@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
@@ -28,4 +29,25 @@ func ConnDB(srvString string) (*mongo.Client, error) {
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	return client, err
+}
+
+func GetDBProjects(client *mongo.Client) ([]bson.M, error) {
+	collection := client.Database("tc-web").Collection("projects")
+
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var projects []bson.M
+	if err = cursor.All(context.TODO(), &projects); err != nil {
+		return nil, err
+	}
+
+	if projects == nil {
+		projects = []bson.M{}
+	}
+
+	return projects, nil
 }
