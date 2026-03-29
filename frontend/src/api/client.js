@@ -69,16 +69,26 @@ export const api = {
     const query = search.toString();
     return request(`/projects${query ? `?${query}` : ''}`);
   },
+
   likeProject(projectId) {
-    return request(`/projects/${projectId}/like`, {
-      method: 'POST',
+  // Ajout de /api au début du chemin
+  return request(`/api/projects/${projectId}/like`, {
+    method: 'POST',
+  });
+},
+
+  dislikeProject(projectId) {
+    return request(`/api/projects/${projectId}/dislike`, {
+      method: 'POST', // Ou 'PATCH'
     });
   },
-  unlikeProject(projectId) {
-    return request(`/projects/${projectId}/like`, {
-      method: 'DELETE',
-    });
-  },
+
+unlikeProject(projectId) {
+  // Ajout de /api au début du chemin
+  return request(`/api/projects/${projectId}/like`, {
+    method: 'DELETE',
+  });
+},
   myProjects() {
     return request('/me/projects');
   },
