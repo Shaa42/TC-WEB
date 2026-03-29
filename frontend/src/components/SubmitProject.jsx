@@ -11,7 +11,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-
+    const [longDescription, setLongDescription] = useState("");
     // Fonctions de bascule (Toggle)
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -35,6 +35,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
         const formData = new FormData();
         formData.append("title", title.trim());
         formData.append("description", description.trim());
+        formData.append("long_description", longDescription.trim());
 
         // Ajouter l'image (fichier réel)
         if (image) {
@@ -68,7 +69,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             console.error(err);
             setError(
                 err.message ||
-                    "Impossible de publier le projet. Veuillez reessayer.",
+                "Impossible de publier le projet. Veuillez reessayer.",
             );
             setIsSubmitting(false);
         }
@@ -171,8 +172,10 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                     <div className="form-section">
                         <h3>Détails supplémentaires</h3>
                         <textarea
-                            placeholder="Explication complète du projet, objectifs, besoins..."
+                            placeholder="Explication complète du projet..."
                             className="input-field long-desc"
+                            value={longDescription}
+                            onChange={(e) => setLongDescription(e.target.value)} // AJOUT ICI
                         ></textarea>
 
                         <div className="file-upload-group">
@@ -195,8 +198,8 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         {isSubmitting
                             ? "Publication..."
                             : success
-                              ? "Publie!"
-                              : "Mettre en ligne"}
+                                ? "Publie!"
+                                : "Mettre en ligne"}
                     </button>
                 </form>
             </div>

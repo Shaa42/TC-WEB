@@ -14,7 +14,7 @@ import TinderCard from "react-tinder-card";
 const MaPage = ({ onNavigate }) => {
     const [projects, setProjects] = useState([]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0); // État pour les photos
+    const [currentImageIndex, setCurrentImageIndex] = useState(0); 
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,10 +50,9 @@ const MaPage = ({ onNavigate }) => {
 
     const nextProject = () => {
         setCurrentProjectIndex((prev) => prev + 1);
-        setCurrentImageIndex(0); // Reset l'image pour le nouveau projet
+        setCurrentImageIndex(0); 
     };
 
-    // --- NAVIGATION PHOTOS (Flèches) ---
     const nextImage = () => {
         const project = projects[currentProjectIndex];
         const images = Array.isArray(project?.images) ? project.images : [project?.img];
@@ -68,29 +67,18 @@ const MaPage = ({ onNavigate }) => {
         }
     };
 
-    // --- VOTES (Base de données) ---
-const handleVote = async (projectId, type) => {
-    try {
-        // 1. On utilise l'URL que ton serveur Gin connaît : /api/projects/:id/like ou /api/projects/:id/dislike
-        // 2. On utilise POST car c'est ce qui est défini dans ton main.go
-        const response = await fetch(`http://localhost:8080/api/projects/${projectId}/${type}`, {
-            method: 'POST', 
-            headers: { 
-                'Content-Type': 'application/json',
-                // Si ton serveur demande un token, il faut l'ajouter ici, 
-                // mais testons déjà avec le POST simple
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erreur serveur: ${response.status}`);
+    const handleVote = async (projectId, type) => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/projects/${projectId}/${type}`, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`Erreur serveur: ${res.status}`);
+            console.log(`Vote ${type} réussi pour ${projectId}`);
+        } catch (err) {
+            console.error("Erreur lors du vote:", err.message);
         }
-        
-        console.log(`Vote ${type} réussi pour ${projectId}`);
-    } catch (err) {
-        console.error("Erreur lors du vote:", err.message);
-    }
-};
+    };
 
     const swipe = async (dir) => {
         const topIndex = visibleProjects.length - 1;
@@ -129,6 +117,10 @@ const handleVote = async (projectId, type) => {
         .filter(Boolean)
         .reverse();
 
+    // Gestion des images pour la modale
+    const currentImages = Array.isArray(currentProject?.images) ? currentProject.images : [currentProject?.img];
+    const currentModalImage = currentImages[currentImageIndex] || null;
+
     return (
         <div className="page-container">
             <button className="menu-burger" onClick={toggleMenu}><div className="barre"></div><div className="barre"></div><div className="barre"></div></button>
@@ -161,13 +153,9 @@ const handleVote = async (projectId, type) => {
                             swipeRequirementType="position"
                             swipeThreshold={80}
                             onSwipe={(dir) => {
-    if (dir === 'left') {
-      handleVote(project._id, 'dislike'); // On incrémente le dislike en BDD
-    } else if (dir === 'right') {
-      handleVote(project._id, 'like');    // On incrémente le like en BDD
-    }
-  }}
-
+                                if (dir === 'left') handleVote(project._id, 'dislike');
+                                else if (dir === 'right') handleVote(project._id, 'like');
+                            }}
                             onCardLeftScreen={() => isTopCard && nextProject()}
                             preventSwipe={["up", "down"]}
                         >
@@ -198,23 +186,49 @@ const handleVote = async (projectId, type) => {
                 })}
             </div>
 
+            {/* --- MODALE DÉTAILS (INFO) --- */}
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={toggleModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button className="close-modal" onClick={toggleModal}>x</button>
+                        <div className="modal-header">
+                            {currentModalImage ? (
+                                <img src={currentModalImage} alt={currentProject.title} />
+                            ) : (
+                                <div className="no-image-placeholder">Pas d'image</div>
+                            )}
+                        </div>
+                        <div className="modal-body">
+                            <h2 className="modal-title">{currentProject.title}</h2>
+                            <div className="modal-section">
+                                <h3>Description détaillée</h3>
+                                <p>
+                                    {currentProject.long_description && currentProject.long_description.trim() !== "" 
+                                        ? currentProject.long_description 
+                                        : "Ce projet n'a pas encore de description détaillée."}
+                                </p>
+                            </div>
+                            <button className="modal-action-btn" onClick={() => { swipe("right"); toggleModal(); }}>
+                                Like ce projet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <footer className="icon-bar">
                 <button className="icon-btn btn-undo" onClick={prevImage}>
                     <img src={flecheGauche} alt="Précédent" />
                 </button>
-
                 <button className="icon-btn btn-undo" onClick={nextImage}>
                     <img src={flecheDroite} alt="Suivant" />
                 </button>
-
                 <button className="icon-btn btn-like" onClick={() => swipe("right")}>
                     <img src={iconeCoeur} alt="Cœur" />
                 </button>
-
                 <button className="icon-btn btn-dislike" onClick={() => swipe("left")}>
                     <img src={croix} alt="Croix" />
                 </button>
-
                 <button className="icon-btn btn-info" onClick={toggleModal}>
                     <img src={info} alt="Plus d'infos" />
                 </button>
