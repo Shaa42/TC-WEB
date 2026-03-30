@@ -53,6 +53,7 @@ func main() {
 	r.Static("/uploads", "./uploads")
 
 	r.GET("/api/projects", request.GetProjects(client))
+	r.GET("/api/labels", request.GetLabels(client))
 	r.POST("/api/projects", request.PostProjects(client))
 	r.Run(":8080")
 }

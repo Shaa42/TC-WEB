@@ -11,7 +11,7 @@ import info from "../assets/info.svg";
 import croix from "../assets/croix.svg";
 import TinderCard from "react-tinder-card";
 
-const MaPage = ({ onNavigate }) => {
+const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) => {
     const [projects, setProjects] = useState([]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -21,6 +21,16 @@ const MaPage = ({ onNavigate }) => {
     const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
     const childRefs = useRef([]);
+    const hasActiveFilters = Array.isArray(selectedLabels) && selectedLabels.length > 0;
+    const currentProject = projects[currentProjectIndex] || {};
+    const visibleProjects = [0, 1, 2]
+        .map((i) => projects[currentProjectIndex + i])
+        .filter(Boolean)
+        .reverse();
+    const currentImage =
+        currentProject.img && currentProject.img !== "http://localhost:8080/uploads/"
+            ? currentProject.img
+            : null;
 
     const playLikeSound = () => {
         const audio = new Audio(LikeAudio);
@@ -32,11 +42,26 @@ const MaPage = ({ onNavigate }) => {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const toggleModal = () => setIsModalOpen(!isModalOpen);
+    const handleClearFilters = () => {
+        if (typeof onClearFilters === "function") {
+            onClearFilters();
+        }
+    };
 
     useEffect(() => {
+        let isMounted = true;
         setIsLoading(true);
         setError(null);
-        fetch("http://localhost:8080/api/projects")
+
+        const url = new URL("http://localhost:8080/api/projects");
+        selectedLabels.forEach((label) => {
+            const trimmed = (label || "").trim();
+            if (trimmed !== "") {
+                url.searchParams.append("labels", trimmed);
+            }
+        });
+
+        fetch(url.toString())
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`Erreur serveur: ${res.status}`);
@@ -44,16 +69,28 @@ const MaPage = ({ onNavigate }) => {
                 return res.json();
             })
             .then((data) => {
+                if (!isMounted) {
+                    return;
+                }
                 const loadedProjects = Array.isArray(data) ? data : [];
                 setProjects(loadedProjects);
+                setCurrentProjectIndex(0);
                 setHasMoreProjects(loadedProjects.length > 0);
+                childRefs.current = [];
                 setIsLoading(false);
             })
             .catch((err) => {
+                if (!isMounted) {
+                    return;
+                }
                 setError(err.message || "Impossible de charger les projets");
                 setIsLoading(false);
             });
-    }, []);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [selectedLabels]);
 
     const nextProject = () => {
         setCurrentProjectIndex((prev) => {
@@ -67,6 +104,9 @@ const MaPage = ({ onNavigate }) => {
 
     const swipe = async (dir) => {
         const topIndex = visibleProjects.length - 1;
+        if (topIndex < 0) {
+            return;
+        }
         if (childRefs.current[topIndex]) {
             await childRefs.current[topIndex].swipe(dir);
         }
@@ -140,6 +180,16 @@ const MaPage = ({ onNavigate }) => {
                         >
                             Classement
                         </a>
+                        <a
+                            href="#Filtrage"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onNavigate("filter");
+                            }}
+                        >
+                            Filtrage
+                        </a>
+                        <a href="#Projetfav">Mes Projets Favoris</a>
                         <hr />
                     </nav>
                 </div>
@@ -150,10 +200,20 @@ const MaPage = ({ onNavigate }) => {
                     <h1 className="main-title">
                         Project<span>Match</span>
                     </h1>
-                    <p className="state-message">Aucun projet disponible pour le moment.</p>
-                    <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
-                        Déposer un projet
-                    </button>
+                    <p className="state-message">
+                        {hasActiveFilters
+                            ? "Aucun projet ne correspond à ces filtres."
+                            : "Aucun projet disponible pour le moment."}
+                    </p>
+                    {hasActiveFilters ? (
+                        <button className="retry-btn" onClick={handleClearFilters}>
+                            Effacer les filtres
+                        </button>
+                    ) : (
+                        <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
+                            Déposer un projet
+                        </button>
+                    )}
                 </div>
             </div>
         );
@@ -193,6 +253,17 @@ const MaPage = ({ onNavigate }) => {
                         >
                             Classement
                         </a>
+                        <a
+                            href="#Filtrage"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onNavigate("filter");
+                            }}
+                        >
+                            Filtrage
+                        </a>
+                        <a href="#Projetfav">Mes Projets Favoris</a>
+                        <hr />
                     </nav>
                 </div>
                 {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
@@ -200,24 +271,24 @@ const MaPage = ({ onNavigate }) => {
                     <h1 className="main-title">
                         Project<span>Match</span>
                     </h1>
-                    <p className="state-message">Aucun projet disponible.</p>
-                    <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
-                        Déposer un projet
-                    </button>
+                    <p className="state-message">
+                        {hasActiveFilters
+                            ? "Aucun projet ne correspond à ces filtres."
+                            : "Aucun projet disponible."}
+                    </p>
+                    {hasActiveFilters ? (
+                        <button className="retry-btn" onClick={handleClearFilters}>
+                            Effacer les filtres
+                        </button>
+                    ) : (
+                        <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
+                            Déposer un projet
+                        </button>
+                    )}
                 </div>
             </div>
         );
     }
-
-    const currentProject = projects[currentProjectIndex] || {};
-    const currentImage =
-        currentProject.img && currentProject.img !== "http://localhost:8080/uploads/"
-            ? currentProject.img
-            : null;
-    const visibleProjects = [0, 1, 2]
-        .map((i) => projects[currentProjectIndex + i])
-        .filter(Boolean)
-        .reverse();
 
     return (
         <div className="page-container">
@@ -252,6 +323,15 @@ const MaPage = ({ onNavigate }) => {
                     >
                         Classement
                     </a>
+                    <a
+                        href="#Filtrage"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onNavigate("filter");
+                        }}
+                    >
+                        Filtrage
+                    </a>
                     <hr />
 
                     <a href="#Projetfav">Mes Projets Favoris</a>
@@ -264,6 +344,26 @@ const MaPage = ({ onNavigate }) => {
             <h1 className="main-title">
                 Project<span>Match</span>
             </h1>
+
+            {hasActiveFilters && (
+                <div className="active-filters">
+                    <div className="filter-pill-group">
+                        {selectedLabels.map((label) => (
+                            <span key={label} className="filter-pill">
+                                {label}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="filter-actions">
+                        <button className="filter-link" onClick={() => onNavigate("filter")}>
+                            Modifier
+                        </button>
+                        <button className="filter-link" onClick={handleClearFilters}>
+                            Effacer
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="cardContainer">
                 {visibleProjects.map((project, index) => {
