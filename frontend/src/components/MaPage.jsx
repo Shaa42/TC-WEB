@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/MaPage.css";
 import "../styles/modal-styles.css";
-import LikeAudio from "./likeaudio.mp3";
+import LikeAudio from "../assets/likeaudio.mp3";
 
 // Import des assets
 import iconeCoeur from "../assets/coeur.svg";
@@ -11,7 +11,11 @@ import info from "../assets/info.svg";
 import croix from "../assets/croix.svg";
 import TinderCard from "react-tinder-card";
 
-const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) => {
+const MaPage = ({
+    onNavigate,
+    selectedLabels = [],
+    onClearFilters = () => {},
+}) => {
     const [projects, setProjects] = useState([]);
     const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -21,14 +25,16 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
     const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
     const childRefs = useRef([]);
-    const hasActiveFilters = Array.isArray(selectedLabels) && selectedLabels.length > 0;
+    const hasActiveFilters =
+        Array.isArray(selectedLabels) && selectedLabels.length > 0;
     const currentProject = projects[currentProjectIndex] || {};
     const visibleProjects = [0, 1, 2]
         .map((i) => projects[currentProjectIndex + i])
         .filter(Boolean)
         .reverse();
     const currentImage =
-        currentProject.img && currentProject.img !== "http://localhost:8080/uploads/"
+        currentProject.img &&
+        currentProject.img !== "http://localhost:8080/uploads/"
             ? currentProject.img
             : null;
 
@@ -113,7 +119,7 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
     };
 
     const handleCardSwipe = (dir) => {
-        if (dir === "left") {
+        if (dir === "right") {
             playLikeSound();
         }
     };
@@ -139,7 +145,10 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                         Project<span>Match</span>
                     </h1>
                     <p className="state-message error">{error}</p>
-                    <button className="retry-btn" onClick={() => window.location.reload()}>
+                    <button
+                        className="retry-btn"
+                        onClick={() => window.location.reload()}
+                    >
                         Réessayer
                     </button>
                 </div>
@@ -194,7 +203,9 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                     </nav>
                 </div>
 
-                {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+                {isMenuOpen && (
+                    <div className="overlay" onClick={toggleMenu}></div>
+                )}
 
                 <div className="empty-state">
                     <h1 className="main-title">
@@ -206,11 +217,17 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                             : "Aucun projet disponible pour le moment."}
                     </p>
                     {hasActiveFilters ? (
-                        <button className="retry-btn" onClick={handleClearFilters}>
+                        <button
+                            className="retry-btn"
+                            onClick={handleClearFilters}
+                        >
                             Effacer les filtres
                         </button>
                     ) : (
-                        <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
+                        <button
+                            className="submit-project-btn"
+                            onClick={() => onNavigate("submit")}
+                        >
                             Déposer un projet
                         </button>
                     )}
@@ -219,7 +236,8 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
         );
     }
 
-    const noMoreProjects = !hasMoreProjects || currentProjectIndex >= projects.length;
+    const noMoreProjects =
+        !hasMoreProjects || currentProjectIndex >= projects.length;
 
     if (noMoreProjects) {
         return (
@@ -266,7 +284,9 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                         <hr />
                     </nav>
                 </div>
-                {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
+                {isMenuOpen && (
+                    <div className="overlay" onClick={toggleMenu}></div>
+                )}
                 <div className="empty-state">
                     <h1 className="main-title">
                         Project<span>Match</span>
@@ -277,11 +297,17 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                             : "Aucun projet disponible."}
                     </p>
                     {hasActiveFilters ? (
-                        <button className="retry-btn" onClick={handleClearFilters}>
+                        <button
+                            className="retry-btn"
+                            onClick={handleClearFilters}
+                        >
                             Effacer les filtres
                         </button>
                     ) : (
-                        <button className="submit-project-btn" onClick={() => onNavigate("submit")}>
+                        <button
+                            className="submit-project-btn"
+                            onClick={() => onNavigate("submit")}
+                        >
                             Déposer un projet
                         </button>
                     )}
@@ -355,10 +381,16 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                         ))}
                     </div>
                     <div className="filter-actions">
-                        <button className="filter-link" onClick={() => onNavigate("filter")}>
+                        <button
+                            className="filter-link"
+                            onClick={() => onNavigate("filter")}
+                        >
                             Modifier
                         </button>
-                        <button className="filter-link" onClick={handleClearFilters}>
+                        <button
+                            className="filter-link"
+                            onClick={handleClearFilters}
+                        >
                             Effacer
                         </button>
                     </div>
@@ -368,7 +400,8 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
             <div className="cardContainer">
                 {visibleProjects.map((project, index) => {
                     const image =
-                        project.img && project.img !== "http://localhost:8080/uploads/"
+                        project.img &&
+                        project.img !== "http://localhost:8080/uploads/"
                             ? project.img
                             : null;
 
@@ -397,14 +430,20 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                                                 alt={project.title}
                                                 onError={(e) => {
                                                     e.target.onerror = null;
-                                                    e.target.style.display = "none";
-                                                    e.target.nextSibling.style.display = "flex";
+                                                    e.target.style.display =
+                                                        "none";
+                                                    e.target.nextSibling.style.display =
+                                                        "flex";
                                                 }}
                                             />
                                         ) : null}
                                         <div
                                             className="no-image-placeholder"
-                                            style={{ display: image ? "none" : "flex" }}
+                                            style={{
+                                                display: image
+                                                    ? "none"
+                                                    : "flex",
+                                            }}
                                         >
                                             Pas d'image
                                         </div>
@@ -423,7 +462,10 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
 
             {isModalOpen && (
                 <div className="modal-overlay" onClick={toggleModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div
+                        className="modal-content"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <button className="close-modal" onClick={toggleModal}>
                             x
                         </button>
@@ -437,24 +479,32 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.style.display = "none";
-                                        e.target.nextSibling.style.display = "flex";
+                                        e.target.nextSibling.style.display =
+                                            "flex";
                                     }}
                                 />
                             ) : null}
                             <div
                                 className="no-image-placeholder"
-                                style={{ display: currentImage ? "none" : "flex" }}
+                                style={{
+                                    display: currentImage ? "none" : "flex",
+                                }}
                             >
                                 Pas d'image
                             </div>
                         </div>
 
                         <div className="modal-body">
-                            <h2 className="modal-title">{currentProject.title || "Sans titre"}</h2>
+                            <h2 className="modal-title">
+                                {currentProject.title || "Sans titre"}
+                            </h2>
 
                             <div className="modal-section">
                                 <h3>Description du projet</h3>
-                                <p>{currentProject.description || "Pas de description disponible."}</p>
+                                <p>
+                                    {currentProject.description ||
+                                        "Pas de description disponible."}
+                                </p>
                             </div>
                             <button
                                 className="modal-action-btn"
@@ -479,11 +529,17 @@ const MaPage = ({ onNavigate, selectedLabels = [], onClearFilters = () => {} }) 
                     <img src={flecheDroite} alt="Projet suivant" />
                 </button>
 
-                <button className="icon-btn btn-like" onClick={() => swipe("right")}>
+                <button
+                    className="icon-btn btn-like"
+                    onClick={() => swipe("right")}
+                >
                     <img src={iconeCoeur} alt="Cœur" />
                 </button>
 
-                <button className="icon-btn btn-dislike" onClick={() => swipe("left")}>
+                <button
+                    className="icon-btn btn-dislike"
+                    onClick={() => swipe("left")}
+                >
                     <img src={croix} alt="Croix" />
                 </button>
 
