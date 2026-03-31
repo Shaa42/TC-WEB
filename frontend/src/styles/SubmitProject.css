@@ -216,3 +216,37 @@
   border-color: #dc3545 !important;
   box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1) !important;
 }
+
+.labels-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.labels-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.labels-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.label-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.label-pill {
+  padding: 6px 14px;
+  background: #fff5f7;
+  border-radius: 999px;
+  color: #fd297b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid rgba(253, 41, 123, 0.2);
+}

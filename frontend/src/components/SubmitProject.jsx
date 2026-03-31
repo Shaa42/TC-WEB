@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "../styles/SubmitProject.css";
 
 const SubmitProject = ({ onBack, onNavigate }) => {
@@ -12,6 +12,24 @@ const SubmitProject = ({ onBack, onNavigate }) => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [longDescription, setLongDescription] = useState("");
+    const [labelsInput, setLabelsInput] = useState("");
+    const labelPreview = useMemo(() => {
+        const seen = new Set();
+        return labelsInput
+            .split(",")
+            .map((label) => label.trim())
+            .filter((label) => {
+                if (!label) {
+                    return false;
+                }
+                const key = label.toLowerCase();
+                if (seen.has(key)) {
+                    return false;
+                }
+                seen.add(key);
+                return true;
+            });
+    }, [labelsInput]);
     // Fonctions de bascule (Toggle)
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -36,6 +54,9 @@ const SubmitProject = ({ onBack, onNavigate }) => {
         formData.append("title", title.trim());
         formData.append("description", description.trim());
         formData.append("long_description", longDescription.trim());
+        if (labelPreview.length > 0) {
+            formData.append("labels", labelPreview.join(","));
+        }
 
         // Ajouter l'image (fichier réel)
         if (image) {
@@ -155,6 +176,27 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                                 if (error) setError(null);
                             }}
                         />
+
+                        <div className="labels-group">
+                            <label>Thématiques (séparées par des virgules)</label>
+                            <input
+                                type="text"
+                                className="input-field"
+                                placeholder="Ex: IA, Blockchain, Santé"
+                                value={labelsInput}
+                                onChange={(e) => setLabelsInput(e.target.value)}
+                            />
+                            <p className="labels-hint">Ces labels permettront aux autres d'appliquer un filtrage.</p>
+                            {labelPreview.length > 0 && (
+                                <div className="label-preview">
+                                    {labelPreview.map((label) => (
+                                        <span key={label} className="label-pill">
+                                            {label}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         <div className="file-upload-group">
                             <label>Photo du projet</label>
