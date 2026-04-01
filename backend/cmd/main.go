@@ -13,7 +13,7 @@ import (
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Couldn't open env file")
+		_ = godotenv.Load("cmd/.env")
 	}
 
 	// Create a new client and connect to the server
