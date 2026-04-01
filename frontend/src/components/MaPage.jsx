@@ -551,12 +551,12 @@ const MaPage = ({
                             </h2>
 
                             <div className="modal-section">
-                                <h3>Description du projet</h3>
-                                <p>
-                                    {currentProject.description ||
-                                        "Pas de description disponible."}
-                                </p>
-                            </div>
+        <h3>À propos du projet</h3>
+        {/* Utilisation de la clé long_description de ton API Go */}
+        <p className="long-description-text">
+            {currentProject.long_description || "Aucun détail supplémentaire pour ce projet."}
+        </p>
+    </div>
                             <button
                                 className="modal-action-btn"
                                 onClick={() => {
