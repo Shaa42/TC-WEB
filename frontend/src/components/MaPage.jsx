@@ -20,12 +20,13 @@ const MaPage = ({
     setProjects,
     currentProjectIndex,
     setCurrentProjectIndex,
+		hasMoreProjects,
+		setHasMoreProjects,
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
     const childRefs = useRef([]);
     const prevSelectedLabelsRef = useRef([]);
@@ -72,6 +73,9 @@ const MaPage = ({
 
     useEffect(() => {
         let isMounted = true;
+				const oldProjectCount = projects.length;
+				const oldHasMore = hasMoreProjects;
+
         setIsLoading(true);
         setError(null);
 
@@ -113,8 +117,19 @@ const MaPage = ({
                 }
 
                 prevSelectedLabelsRef.current = currentLabels;
+								setProjects(loadedProjects);
 
-                setHasMoreProjects(loadedProjects.length > 0);
+                const isAllSwiped = !oldHasMore && oldProjectCount > 0;
+                if (labelsChanged) {
+                    setHasMoreProjects(loadedProjects.length > 0);
+                } else if (isAllSwiped && loadedProjects.length <= oldProjectCount) {
+                    // Maintenir l'état 'terminé' si on était au bout et les projets n'ont pas augmenté
+                    setHasMoreProjects(false);
+                } else {
+                    setHasMoreProjects(loadedProjects.length > 0);
+                }
+
+
                 childRefs.current = [];
                 setIsLoading(false);
             })
