@@ -54,5 +54,9 @@ func main() {
 
 	r.GET("/api/projects", request.GetProjects(client))
 	r.POST("/api/projects", request.PostProjects(client))
+
+	r.POST("/api/projects/:id/like", request.PostLike(client))
+	r.POST("/api/projects/:id/dislike", request.PostDislike(client))
+
 	r.Run(":8080")
 }
