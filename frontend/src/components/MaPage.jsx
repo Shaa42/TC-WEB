@@ -49,11 +49,11 @@ const MaPage = ({
     };
 
     const playClick = () => {
-    const audio = new Audio(ClickAudio);
-    audio
-        .play()
-        .then(() => console.log("Audio success"))
-        .catch((err) => console.error("Audio failed : ", err));
+	const audio = new Audio(ClickAudio);
+	audio
+	    .play()
+	    .then(() => console.log("Audio success"))
+	    .catch((err) => console.error("Audio failed : ", err));
     };
 
     const playHUHSound = () => {
@@ -72,7 +72,7 @@ const MaPage = ({
     const toggleMenu = () => { playClick(); setIsMenuOpen(!isMenuOpen); };
     const toggleModal = () => { playClick(); setIsModalOpen(!isModalOpen); };
     const handleClearFilters = () => {
-    playClick();
+	playClick();
         if (typeof onClearFilters === "function") {
             onClearFilters();
         }
@@ -91,7 +91,7 @@ const MaPage = ({
             }
         });
 
-        fetch(url.toString())
+        fetch(url.toString())    
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`Erreur serveur: ${res.status}`);
@@ -146,8 +146,8 @@ const MaPage = ({
         if (dir === "right") {
             playLikeSound();
         } else if (dir === "left") {
-        playHUHSound();
-    }
+		playHUHSound();
+	}
     };
 
     if (isLoading) {
@@ -200,7 +200,7 @@ const MaPage = ({
                         <a
                             href="#Deposer"
                             onClick={(e) => {
-                playClick();
+				playClick();
                                 e.preventDefault();
                                 onNavigate("submit");
                             }}
@@ -210,7 +210,7 @@ const MaPage = ({
                         <a
                             href="#Classement"
                             onClick={(e) => {
-                playClick();
+				playClick();
                                 e.preventDefault();
                                 onNavigate("leaderboard");
                             }}
@@ -220,7 +220,7 @@ const MaPage = ({
                         <a
                             href="#Filtrage"
                             onClick={(e) => {
-                playClick();
+				playClick();
                                 e.preventDefault();
                                 onNavigate("filter");
                             }}
