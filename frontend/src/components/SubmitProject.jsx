@@ -62,11 +62,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             formData.append("images", image);
         }
 
-        // Ajouter la vidéo si elle existe
-        if (videoFile) {
-            formData.append("video", videoFile);
-        }
-
         try {
             const response = await fetch("http://localhost:8080/api/projects", {
                 method: "POST",
@@ -84,7 +79,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             setSuccess(true);
             setTimeout(() => {
                 onBack(); // retour a l'acceuil apres 1 seconde
-            }, 1000);
+            }, 3000);
         } catch (err) {
             console.error(err);
             setError(
