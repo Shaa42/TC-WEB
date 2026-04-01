@@ -11,6 +11,7 @@ function App() {
 
   const [projects, setProjects] = useState([]);
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+  const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
   // Fonction centrale pour changer de page
   const navigate = (page) => setCurrentPage(page);
@@ -37,6 +38,8 @@ function App() {
           setProjects={setProjects}
           currentProjectIndex={currentProjectIndex}
           setCurrentProjectIndex={setCurrentProjectIndex}
+          hasMoreProjects={hasMoreProjects}
+          setHasMoreProjects={setHasMoreProjects}
         />
       )}
       
