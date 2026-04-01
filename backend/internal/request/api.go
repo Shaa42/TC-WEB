@@ -2,12 +2,14 @@ package request
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 const uploadsBaseURL = "http://localhost:8080/uploads/"
@@ -194,4 +196,49 @@ func parseLabelSelections(c *gin.Context) []string {
 		}
 	}
 	return NormalizeLabels(labels)
+}
+
+func updateProjectCounter(client *mongo.Client, projectID string, field string, delta int) (bson.M, error) {
+	objID, err := bson.ObjectIDFromHex(projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	collection := client.Database("tc-web").Collection("projects")
+	result := collection.FindOneAndUpdate(
+		context.Background(),
+		bson.M{"_id": objID},
+		bson.M{"$inc": bson.M{field: delta}},
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
+	)
+
+	var updated bson.M
+	if err := result.Decode(&updated); err != nil {
+		return nil, err
+	}
+	return updated, nil
+}
+
+func PostLike(client *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		updated, err := updateProjectCounter(client, id, "like", 1)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide ou impossible de mettre à jour le like"})
+			return
+		}
+		c.JSON(http.StatusOK, updated)
+	}
+}
+
+func PostDislike(client *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		updated, err := updateProjectCounter(client, id, "dislike", 1)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide ou impossible de mettre à jour le dislike"})
+			return
+		}
+		c.JSON(http.StatusOK, updated)
+	}
 }

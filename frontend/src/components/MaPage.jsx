@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/MaPage.css";
 import "../styles/modal-styles.css";
 import LikeAudio from "../assets/likeaudio.mp3";
+import { api } from "../api/client";
 
 // Import des assets
 import iconeCoeur from "../assets/coeur.svg";
@@ -15,9 +16,11 @@ const MaPage = ({
     onNavigate,
     selectedLabels = [],
     onClearFilters = () => {},
+    projects,
+    setProjects,
+    currentProjectIndex,
+    setCurrentProjectIndex,
 }) => {
-    const [projects, setProjects] = useState([]);
-    const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,6 +28,19 @@ const MaPage = ({
     const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
     const childRefs = useRef([]);
+    const prevSelectedLabelsRef = useRef([]);
+
+    const getProjectId = (project) => {
+        if (!project || !project._id) return null;
+        if (typeof project._id === "string") return project._id;
+        if (project._id.$oid) return project._id.$oid;
+        return project._id.toString();
+    };
+
+    const prevProject = () => {
+        setCurrentProjectIndex((prev) => Math.max(0, prev - 1));
+        setHasMoreProjects(true);
+    };
     const hasActiveFilters =
         Array.isArray(selectedLabels) && selectedLabels.length > 0;
     const currentProject = projects[currentProjectIndex] || {};
@@ -80,7 +96,24 @@ const MaPage = ({
                 }
                 const loadedProjects = Array.isArray(data) ? data : [];
                 setProjects(loadedProjects);
-                setCurrentProjectIndex(0);
+
+                // Compare les labels pour déterminer si on doit réinitialiser l'index
+                const previousLabels = prevSelectedLabelsRef.current || [];
+                const currentLabels = Array.isArray(selectedLabels) ? selectedLabels : [];
+                const labelsChanged =
+                    previousLabels.length !== currentLabels.length ||
+                    previousLabels.some((label, idx) => label !== currentLabels[idx]);
+
+                if (labelsChanged) {
+                    setCurrentProjectIndex(0);
+                } else {
+                    setCurrentProjectIndex((prev) =>
+                        Math.min(prev, Math.max(0, loadedProjects.length - 1)),
+                    );
+                }
+
+                prevSelectedLabelsRef.current = currentLabels;
+
                 setHasMoreProjects(loadedProjects.length > 0);
                 childRefs.current = [];
                 setIsLoading(false);
@@ -163,10 +196,28 @@ const MaPage = ({
         }
     };
 
-    const handleCardSwipe = (dir) => {
+    const handleSwipeApi = async (dir, project) => {
+        const projectId = getProjectId(project);
+        if (!projectId) {
+            return;
+        }
+
+        try {
+            if (dir === "right") {
+                await api.likeProject(projectId);
+            } else if (dir === "left") {
+                await api.dislikeProject(projectId);
+            }
+        } catch (err) {
+            console.error("Failed like/dislike:", err);
+        }
+    };
+
+    const handleCardSwipe = async (dir, project) => {
         if (dir === "right") {
             playLikeSound();
         }
+        await handleSwipeApi(dir, project);
     };
 
     if (isLoading) {
@@ -454,7 +505,7 @@ const MaPage = ({
                             key={currentProjectIndex + "-" + index}
                             swipeRequirementType="position"
                             swipeThreshold={80}
-                            onSwipe={handleCardSwipe}
+                            onSwipe={(dir) => handleCardSwipe(dir, project)}
                             onCardLeftScreen={() => {
                                 if (index === visibleProjects.length - 1) {
                                     nextProject();
@@ -542,12 +593,12 @@ const MaPage = ({
                             </h2>
 
                             <div className="modal-section">
-                                <h3>Description du projet</h3>
-                                <p>
-                                    {currentProject.description ||
-                                        "Pas de description disponible."}
-                                </p>
-                            </div>
+        <h3>À propos du projet</h3>
+        {/* Utilisation de la clé long_description de ton API Go */}
+        <p className="long-description-text">
+            {currentProject.long_description || "Aucun détail supplémentaire pour ce projet."}
+        </p>
+    </div>
                             <button
                                 className="modal-action-btn"
                                 onClick={() => {
