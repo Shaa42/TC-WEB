@@ -141,6 +141,51 @@ const MaPage = ({
         });
     };
 
+    const previousProject = () => {
+        setCurrentProjectIndex((prev) => {
+            if (prev <= 0) {
+                return prev;
+            }
+            return prev - 1;
+        });
+    };
+
+    const likeProject = (projectId) => {
+        fetch(`http://localhost:8080/api/projects/${projectId}/like`, {
+            method: "POST",
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Erreur serveur: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(() => {
+                console.log("Projet liké avec succès");
+            })
+            .catch((err) => {
+                console.error("Erreur lors du like du projet:", err);
+            });
+    };
+
+    const dislikeProject = (projectId) => {
+        fetch(`http://localhost:8080/api/projects/${projectId}/dislike`, {
+            method: "POST",
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Erreur serveur: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(() => {
+                console.log("Projet disliké avec succès");
+            })
+            .catch((err) => {
+                console.error("Erreur lors du dislike du projet:", err);
+            });
+    };
+
     const swipe = async (dir) => {
         const topIndex = visibleProjects.length - 1;
         if (topIndex < 0) {
@@ -221,7 +266,6 @@ const MaPage = ({
                         ×
                     </button>
                     <nav className="menu-options">
-                        <a href="#profil">Mon Profil</a>
                         <a
                             href="#Deposer"
                             onClick={(e) => {
@@ -303,7 +347,6 @@ const MaPage = ({
                         ×
                     </button>
                     <nav className="menu-options">
-                        <a href="#profil">Mon Profil</a>
                         <a
                             href="#Déposer"
                             onClick={(e) => {
@@ -380,7 +423,6 @@ const MaPage = ({
                     ×
                 </button>
                 <nav className="menu-options">
-                    <a href="#profil">Mon Profil</a>
                     <a
                         href="#Déposer"
                         onClick={(e) => {
@@ -562,6 +604,7 @@ const MaPage = ({
                                 onClick={() => {
                                     toggleModal();
                                     nextProject();
+                                    likeProject(currentProject._id);
                                 }}
                             >
                                 Like
@@ -572,7 +615,7 @@ const MaPage = ({
             )}
 
             <footer className="icon-bar">
-<button className="icon-btn btn-undo" onClick={prevProject}>
+                <button className="icon-btn btn-undo" onClick={previousProject}>
                     <img src={flecheGauche} alt="Projet précédent" />
                 </button>
 
@@ -582,14 +625,20 @@ const MaPage = ({
 
                 <button
                     className="icon-btn btn-like"
-                    onClick={() => swipe("right")}
+                    onClick={() => {
+                        swipe("right");
+                        likeProject(currentProject._id);
+                    }}
                 >
                     <img src={iconeCoeur} alt="Cœur" />
                 </button>
 
                 <button
                     className="icon-btn btn-dislike"
-                    onClick={() => swipe("left")}
+                    onClick={() => {
+                        swipe("left");
+                        dislikeProject(currentProject._id);
+                    }}
                 >
                     <img src={croix} alt="Croix" />
                 </button>

@@ -31,23 +31,6 @@ func main() {
 		}
 	}()
 
-	// Request users collection
-	// usersCollection := client.Database("sample_mflix").Collection("users")
-	// cursor, err := usersCollection.Find(context.TODO(), bson.D{})
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer cursor.Close(context.TODO())
-
-	// var users []bson.M
-	// if err := cursor.All(context.TODO(), &users); err != nil {
-	// 	panic(err)
-	// }
-
-	// if users == nil {
-	// 	users = []bson.M{}
-	// }
-
 	// API
 	r := gin.Default()
 
@@ -57,10 +40,16 @@ func main() {
 	// static files (images uploads)
 	r.Static("/uploads", "./uploads")
 
+	// Get all projects
 	r.GET("/api/projects", request.GetProjects(client))
+
+	// Get all labels
 	r.GET("/api/labels", request.GetLabels(client))
+
+	// Post a new project
 	r.POST("/api/projects", request.PostProjects(client))
 
+	// Like and dislike a project
 	r.POST("/api/projects/:id/like", request.PostLike(client))
 	r.POST("/api/projects/:id/dislike", request.PostDislike(client))
 

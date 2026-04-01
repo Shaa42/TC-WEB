@@ -89,7 +89,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             console.error(err);
             setError(
                 err.message ||
-                "Impossible de publier le projet. Veuillez reessayer.",
+                    "Impossible de publier le projet. Veuillez reessayer.",
             );
             setIsSubmitting(false);
         }
@@ -110,7 +110,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                     ×
                 </button>
                 <nav className="menu-options">
-                    <a href="#profil">Mon Profil</a>
                     <a
                         href="#projets"
                         onClick={(e) => {
@@ -125,7 +124,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         href="#Classement"
                         onClick={(e) => {
                             e.preventDefault();
-                            onNavigate('leaderboard');
+                            onNavigate("leaderboard");
                         }}
                     >
                         Classement
@@ -177,7 +176,9 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         />
 
                         <div className="labels-group">
-                            <label>Thématiques (séparées par des virgules)</label>
+                            <label>
+                                Thématiques (séparées par des virgules)
+                            </label>
                             <input
                                 type="text"
                                 className="input-field"
@@ -185,11 +186,17 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                                 value={labelsInput}
                                 onChange={(e) => setLabelsInput(e.target.value)}
                             />
-                            <p className="labels-hint">Ces labels permettront aux autres d'appliquer un filtrage.</p>
+                            <p className="labels-hint">
+                                Ces labels permettront aux autres d'appliquer un
+                                filtrage.
+                            </p>
                             {labelPreview.length > 0 && (
                                 <div className="label-preview">
                                     {labelPreview.map((label) => (
-                                        <span key={label} className="label-pill">
+                                        <span
+                                            key={label}
+                                            className="label-pill"
+                                        >
                                             {label}
                                         </span>
                                     ))}
@@ -228,8 +235,8 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         {isSubmitting
                             ? "Publication..."
                             : success
-                                ? "Publie!"
-                                : "Mettre en ligne"}
+                              ? "Publie!"
+                              : "Mettre en ligne"}
                     </button>
                 </form>
             </div>

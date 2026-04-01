@@ -39,7 +39,11 @@ const Leaderboard = ({ onBack, onNavigate }) => {
     }, []);
 
     if (isLoading) {
-        return <div className="page-container"><p className="state-message">Calcul des rangs...</p></div>;
+        return (
+            <div className="page-container">
+                <p className="state-message">Calcul des rangs...</p>
+            </div>
+        );
     }
 
     return (
@@ -52,39 +56,70 @@ const Leaderboard = ({ onBack, onNavigate }) => {
             </button>
 
             {/* --- SIDEBAR --- */}
-            <div className={`sidebar ${isMenuOpen ? 'open' : ''}`}>
-                <button className="close-btn" onClick={toggleMenu}>×</button>
+            <div className={`sidebar ${isMenuOpen ? "open" : ""}`}>
+                <button className="close-btn" onClick={toggleMenu}>
+                    ×
+                </button>
                 <nav className="menu-options">
-                    <a href="#profil">Mon Profil</a>
-                    <a href="#projets" onClick={(e) => { e.preventDefault(); onBack(); }}>Projets</a>
-                    <a href="#Deposer" onClick={(e) => { e.preventDefault(); onNavigate("submit"); }}>Déposer</a>
+                    <a
+                        href="#projets"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onBack();
+                        }}
+                    >
+                        Projets
+                    </a>
+                    <a
+                        href="#Deposer"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onNavigate("submit");
+                        }}
+                    >
+                        Déposer
+                    </a>
                     <hr />
                 </nav>
             </div>
 
             {isMenuOpen && <div className="overlay" onClick={toggleMenu}></div>}
 
-            <h1 className="main-title">Project<span>Rank</span></h1>
+            <h1 className="main-title">
+                Project<span>Rank</span>
+            </h1>
 
             <div className="split-ranking">
                 {/* COLONNE TOP (LIKES) */}
                 <div className="ranking-column">
-                    <h2 className="column-header-title top-title">Top <span>5</span> Projets</h2>
+                    <h2 className="column-header-title top-title">
+                        Top <span>5</span> Projets
+                    </h2>
                     <div className="cards-stack">
                         {topProjects.map((project, index) => (
-                            <div key={project._id} className={`rank-card pos-${index + 1}`}>
+                            <div
+                                key={project._id}
+                                className={`rank-card pos-${index + 1}`}
+                            >
                                 <div className="rank-badge">#{index + 1}</div>
                                 <div className="card-content">
-                                    <span className="category-badge">{project.label || "Projet"}</span>
+                                    <span className="category-badge">
+                                        {project.label || "Projet"}
+                                    </span>
                                     <h3>{project.title}</h3>
                                     <div className="stat-bar">
                                         {/* On calcule le % par rapport au premier pour la jauge */}
                                         <div
                                             className="stat-fill likes"
-                                            style={{ width: `${topProjects[0].like > 0 ? (project.like / topProjects[0].like) * 100 : 0}%` }}
+                                            style={{
+                                                width: `${topProjects[0].like > 0 ? (project.like / topProjects[0].like) * 100 : 0}%`,
+                                            }}
                                         ></div>
                                     </div>
-                                    <p className="stat-text">{(project.like || 0).toLocaleString()} Likes</p>
+                                    <p className="stat-text">
+                                        {(project.like || 0).toLocaleString()}{" "}
+                                        Likes
+                                    </p>
                                 </div>
                             </div>
                         ))}
@@ -93,21 +128,35 @@ const Leaderboard = ({ onBack, onNavigate }) => {
 
                 {/* COLONNE FLOP (DISLIKES) */}
                 <div className="ranking-column">
-                    <h2 className="column-header-title flop-title">Top <span>5</span> Flops</h2>
+                    <h2 className="column-header-title flop-title">
+                        Top <span>5</span> Flops
+                    </h2>
                     <div className="cards-stack">
                         {flopProjects.map((project, index) => (
-                            <div key={project._id} className={`rank-card pos-${index + 1}`}>
+                            <div
+                                key={project._id}
+                                className={`rank-card pos-${index + 1}`}
+                            >
                                 <div className="rank-badge">#{index + 1}</div>
                                 <div className="card-content">
-                                    <span className="category-badge">{project.label || "Projet"}</span>
+                                    <span className="category-badge">
+                                        {project.label || "Projet"}
+                                    </span>
                                     <h3>{project.title}</h3>
                                     <div className="stat-bar">
                                         <div
                                             className="stat-fill dislikes"
-                                            style={{ width: `${flopProjects[0].dislike > 0 ? (project.dislike / flopProjects[0].dislike) * 100 : 0}%` }}
+                                            style={{
+                                                width: `${flopProjects[0].dislike > 0 ? (project.dislike / flopProjects[0].dislike) * 100 : 0}%`,
+                                            }}
                                         ></div>
                                     </div>
-                                    <p className="stat-text">{(project.dislike || 0).toLocaleString()} Dislikes</p>
+                                    <p className="stat-text">
+                                        {(
+                                            project.dislike || 0
+                                        ).toLocaleString()}{" "}
+                                        Dislikes
+                                    </p>
                                 </div>
                             </div>
                         ))}
