@@ -18,11 +18,16 @@ func main() {
 
 	// Create a new client and connect to the server
 	client, err := request.ConnDB("DB_SRV_STRING")
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Disconnect the client when the program end
 	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
+		if client != nil {
+			if err := client.Disconnect(context.TODO()); err != nil {
+				panic(err)
+			}
 		}
 	}()
 
