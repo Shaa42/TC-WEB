@@ -54,7 +54,7 @@ export const api = {
     return request('/auth/me');
   },
   createProject(payload) {
-    return request('/projects', {
+    return request('/api/projects', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
@@ -62,12 +62,31 @@ export const api = {
   listProjects(params = {}) {
     const search = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && String(value).trim() !== '') {
-        search.set(key, value);
+      if (value === undefined || value === null) {
+        return;
+      }
+      if (Array.isArray(value)) {
+        value.forEach((entry) => {
+          if (entry === undefined || entry === null) {
+            return;
+          }
+          const trimmed = String(entry).trim();
+          if (trimmed !== '') {
+            search.append(key, trimmed);
+          }
+        });
+        return;
+      }
+      const trimmedValue = String(value).trim();
+      if (trimmedValue !== '') {
+        search.set(key, trimmedValue);
       }
     });
     const query = search.toString();
-    return request(`/projects${query ? `?${query}` : ''}`);
+    return request(`/api/projects${query ? `?${query}` : ''}`);
+  },
+  listLabels() {
+    return request('/api/labels');
   },
 
   likeProject(projectId) {

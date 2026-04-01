@@ -591,3 +591,62 @@ body {
   font-weight: 500;
   letter-spacing: 0.5px;
 }
+
+.active-filters {
+  width: min(92vw, 720px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.filter-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-pill {
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: white;
+  color: #fd297b;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 20px rgba(253, 41, 123, 0.2);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-link {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 640px) {
+  .active-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 24px;
+  }
+
+  .filter-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
