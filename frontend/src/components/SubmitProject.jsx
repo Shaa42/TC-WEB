@@ -7,7 +7,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(null);
-    const [videoFile, setVideoFile] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -219,17 +218,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                             value={longDescription}
                             onChange={(e) => setLongDescription(e.target.value)} // AJOUT ICI
                         ></textarea>
-
-                        <div className="file-upload-group">
-                            <label>Vidéo de présentation (Optionnel)</label>
-                            <input
-                                type="file"
-                                accept="video/*"
-                                onChange={(e) =>
-                                    setVideoFile(e.target.files[0])
-                                } // On prend le 1er fichier
-                            />
-                        </div>
                     </div>
 
                     <button
