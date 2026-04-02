@@ -2,7 +2,6 @@ package request
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"strings"
 
@@ -217,28 +216,4 @@ func updateProjectCounter(client *mongo.Client, projectID string, field string, 
 		return nil, err
 	}
 	return updated, nil
-}
-
-func PostLike(client *mongo.Client) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("id")
-		updated, err := updateProjectCounter(client, id, "like", 1)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide ou impossible de mettre à jour le like"})
-			return
-		}
-		c.JSON(http.StatusOK, updated)
-	}
-}
-
-func PostDislike(client *mongo.Client) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		id := c.Param("id")
-		updated, err := updateProjectCounter(client, id, "dislike", 1)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide ou impossible de mettre à jour le dislike"})
-			return
-		}
-		c.JSON(http.StatusOK, updated)
-	}
 }
