@@ -9,16 +9,22 @@ function App() {
   const [currentPage, setCurrentPage] = useState('tinder');
   const [selectedLabels, setSelectedLabels] = useState([]);
 
+  const [projects, setProjects] = useState([]);
+  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
+  const [hasMoreProjects, setHasMoreProjects] = useState(true);
+
   // Fonction centrale pour changer de page
   const navigate = (page) => setCurrentPage(page);
 
   const handleApplyFilters = (labels) => {
     setSelectedLabels(labels);
+    setCurrentProjectIndex(0);
     setCurrentPage('tinder');
   };
 
   const clearFilters = () => {
     setSelectedLabels([]);
+    setCurrentProjectIndex(0);
   };
 
   return (
@@ -28,6 +34,12 @@ function App() {
           onNavigate={navigate}
           selectedLabels={selectedLabels}
           onClearFilters={clearFilters}
+          projects={projects}
+          setProjects={setProjects}
+          currentProjectIndex={currentProjectIndex}
+          setCurrentProjectIndex={setCurrentProjectIndex}
+          hasMoreProjects={hasMoreProjects}
+          setHasMoreProjects={setHasMoreProjects}
         />
       )}
       

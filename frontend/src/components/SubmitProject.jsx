@@ -7,7 +7,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(null);
-    const [videoFile, setVideoFile] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
@@ -63,11 +62,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             formData.append("images", image);
         }
 
-        // Ajouter la vidéo si elle existe
-        if (videoFile) {
-            formData.append("video", videoFile);
-        }
-
         try {
             const response = await fetch("http://localhost:8080/api/projects", {
                 method: "POST",
@@ -85,12 +79,12 @@ const SubmitProject = ({ onBack, onNavigate }) => {
             setSuccess(true);
             setTimeout(() => {
                 onBack(); // retour a l'acceuil apres 1 seconde
-            }, 1000);
+            }, 3000);
         } catch (err) {
             console.error(err);
             setError(
                 err.message ||
-                "Impossible de publier le projet. Veuillez reessayer.",
+                    "Impossible de publier le projet. Veuillez reessayer.",
             );
             setIsSubmitting(false);
         }
@@ -111,7 +105,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                     ×
                 </button>
                 <nav className="menu-options">
-                    <a href="#profil">Mon Profil</a>
                     <a
                         href="#projets"
                         onClick={(e) => {
@@ -126,7 +119,7 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         href="#Classement"
                         onClick={(e) => {
                             e.preventDefault();
-                            onNavigate('leaderboard');
+                            onNavigate("leaderboard");
                         }}
                     >
                         Classement
@@ -178,7 +171,9 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         />
 
                         <div className="labels-group">
-                            <label>Thématiques (séparées par des virgules)</label>
+                            <label>
+                                Thématiques (séparées par des virgules)
+                            </label>
                             <input
                                 type="text"
                                 className="input-field"
@@ -186,11 +181,17 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                                 value={labelsInput}
                                 onChange={(e) => setLabelsInput(e.target.value)}
                             />
-                            <p className="labels-hint">Ces labels permettront aux autres d'appliquer un filtrage.</p>
+                            <p className="labels-hint">
+                                Ces labels permettront aux autres d'appliquer un
+                                filtrage.
+                            </p>
                             {labelPreview.length > 0 && (
                                 <div className="label-preview">
                                     {labelPreview.map((label) => (
-                                        <span key={label} className="label-pill">
+                                        <span
+                                            key={label}
+                                            className="label-pill"
+                                        >
                                             {label}
                                         </span>
                                     ))}
@@ -219,17 +220,6 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                             value={longDescription}
                             onChange={(e) => setLongDescription(e.target.value)} // AJOUT ICI
                         ></textarea>
-
-                        <div className="file-upload-group">
-                            <label>Vidéo de présentation (Optionnel)</label>
-                            <input
-                                type="file"
-                                accept="video/*"
-                                onChange={(e) =>
-                                    setVideoFile(e.target.files[0])
-                                } // On prend le 1er fichier
-                            />
-                        </div>
                     </div>
 
                     <button
@@ -240,8 +230,8 @@ const SubmitProject = ({ onBack, onNavigate }) => {
                         {isSubmitting
                             ? "Publication..."
                             : success
-                                ? "Publie!"
-                                : "Mettre en ligne"}
+                              ? "Publie!"
+                              : "Mettre en ligne"}
                     </button>
                 </form>
             </div>

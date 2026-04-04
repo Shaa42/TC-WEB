@@ -4,6 +4,7 @@ import "../styles/modal-styles.css";
 import LikeAudio from "../assets/likeaudio.mp3";
 import HUHAudio from "../assets/HUHaudio.mp3";
 import ClickAudio from "../assets/clickaudio.mp3";
+import { api } from "../api/client";
 
 // Import des assets
 import iconeCoeur from "../assets/coeur.svg";
@@ -17,16 +18,32 @@ const MaPage = ({
     onNavigate,
     selectedLabels = [],
     onClearFilters = () => {},
+    projects,
+    setProjects,
+    currentProjectIndex,
+    setCurrentProjectIndex,
+		hasMoreProjects,
+		setHasMoreProjects,
 }) => {
-    const [projects, setProjects] = useState([]);
-    const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [hasMoreProjects, setHasMoreProjects] = useState(true);
 
     const childRefs = useRef([]);
+    const prevSelectedLabelsRef = useRef([]);
+
+    const getProjectId = (project) => {
+        if (!project || !project._id) return null;
+        if (typeof project._id === "string") return project._id;
+        if (project._id.$oid) return project._id.$oid;
+        return project._id.toString();
+    };
+
+    const prevProject = () => {
+        setCurrentProjectIndex((prev) => Math.max(0, prev - 1));
+        setHasMoreProjects(true);
+    };
     const hasActiveFilters =
         Array.isArray(selectedLabels) && selectedLabels.length > 0;
     const currentProject = projects[currentProjectIndex] || {};
@@ -80,6 +97,9 @@ const MaPage = ({
 
     useEffect(() => {
         let isMounted = true;
+				const oldProjectCount = projects.length;
+				const oldHasMore = hasMoreProjects;
+
         setIsLoading(true);
         setError(null);
 
@@ -104,8 +124,36 @@ const MaPage = ({
                 }
                 const loadedProjects = Array.isArray(data) ? data : [];
                 setProjects(loadedProjects);
-                setCurrentProjectIndex(0);
-                setHasMoreProjects(loadedProjects.length > 0);
+
+                // Compare les labels pour déterminer si on doit réinitialiser l'index
+                const previousLabels = prevSelectedLabelsRef.current || [];
+                const currentLabels = Array.isArray(selectedLabels) ? selectedLabels : [];
+                const labelsChanged =
+                    previousLabels.length !== currentLabels.length ||
+                    previousLabels.some((label, idx) => label !== currentLabels[idx]);
+
+                if (labelsChanged) {
+                    setCurrentProjectIndex(0);
+                } else {
+                    setCurrentProjectIndex((prev) =>
+                        Math.min(prev, Math.max(0, loadedProjects.length - 1)),
+                    );
+                }
+
+                prevSelectedLabelsRef.current = currentLabels;
+								setProjects(loadedProjects);
+
+                const isAllSwiped = !oldHasMore && oldProjectCount > 0;
+                if (labelsChanged) {
+                    setHasMoreProjects(loadedProjects.length > 0);
+                } else if (isAllSwiped && loadedProjects.length <= oldProjectCount) {
+                    // Maintenir l'état 'terminé' si on était au bout et les projets n'ont pas augmenté
+                    setHasMoreProjects(false);
+                } else {
+                    setHasMoreProjects(loadedProjects.length > 0);
+                }
+
+
                 childRefs.current = [];
                 setIsLoading(false);
             })
@@ -132,6 +180,51 @@ const MaPage = ({
         });
     };
 
+    const previousProject = () => {
+        setCurrentProjectIndex((prev) => {
+            if (prev <= 0) {
+                return prev;
+            }
+            return prev - 1;
+        });
+    };
+
+    const likeProject = (projectId) => {
+        fetch(`http://localhost:8080/api/projects/${projectId}/like`, {
+            method: "POST",
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Erreur serveur: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(() => {
+                console.log("Projet liké avec succès");
+            })
+            .catch((err) => {
+                console.error("Erreur lors du like du projet:", err);
+            });
+    };
+
+    const dislikeProject = (projectId) => {
+        fetch(`http://localhost:8080/api/projects/${projectId}/dislike`, {
+            method: "POST",
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`Erreur serveur: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(() => {
+                console.log("Projet disliké avec succès");
+            })
+            .catch((err) => {
+                console.error("Erreur lors du dislike du projet:", err);
+            });
+    };
+
     const swipe = async (dir) => {
         const topIndex = visibleProjects.length - 1;
         if (topIndex < 0) {
@@ -142,12 +235,31 @@ const MaPage = ({
         }
     };
 
-    const handleCardSwipe = (dir) => {
+    const handleSwipeApi = async (dir, project) => {
+        const projectId = getProjectId(project);
+        if (!projectId) {
+            return;
+        }
+
+        try {
+            if (dir === "right") {
+                await api.likeProject(projectId);
+            } else if (dir === "left") {
+                await api.dislikeProject(projectId);
+            }
+        } catch (err) {
+            console.error("Failed like/dislike:", err);
+        }
+    };
+
+    const handleCardSwipe = async (dir, project) => {
         if (dir === "right") {
             playLikeSound();
         } else if (dir === "left") {
 		playHUHSound();
 	}
+        }
+        await handleSwipeApi(dir, project);
     };
 
     if (isLoading) {
@@ -196,7 +308,6 @@ const MaPage = ({
                         ×
                     </button>
                     <nav className="menu-options">
-                        <a href="#profil">Mon Profil</a>
                         <a
                             href="#Deposer"
                             onClick={(e) => {
@@ -281,7 +392,6 @@ const MaPage = ({
                         ×
                     </button>
                     <nav className="menu-options">
-                        <a href="#profil">Mon Profil</a>
                         <a
                             href="#Déposer"
                             onClick={(e) => {
@@ -361,7 +471,6 @@ const MaPage = ({
                     ×
                 </button>
                 <nav className="menu-options">
-                    <a href="#profil">Mon Profil</a>
                     <a
                         href="#Déposer"
                         onClick={(e) => {
@@ -447,7 +556,7 @@ const MaPage = ({
                             key={currentProjectIndex + "-" + index}
                             swipeRequirementType="position"
                             swipeThreshold={80}
-                            onSwipe={handleCardSwipe}
+                            onSwipe={(dir) => handleCardSwipe(dir, project)}
                             onCardLeftScreen={() => {
                                 if (index === visibleProjects.length - 1) {
                                     nextProject();
@@ -535,17 +644,18 @@ const MaPage = ({
                             </h2>
 
                             <div className="modal-section">
-                                <h3>Description du projet</h3>
-                                <p>
-                                    {currentProject.description ||
-                                        "Pas de description disponible."}
-                                </p>
-                            </div>
+        <h3>À propos du projet</h3>
+        {/* Utilisation de la clé long_description de ton API Go */}
+        <p className="long-description-text">
+            {currentProject.long_description || "Aucun détail supplémentaire pour ce projet."}
+        </p>
+    </div>
                             <button
                                 className="modal-action-btn"
                                 onClick={() => {
                                     toggleModal();
                                     nextProject();
+                                    likeProject(currentProject._id);
                                 }}
                             >
                                 Like
@@ -556,7 +666,7 @@ const MaPage = ({
             )}
 
             <footer className="icon-bar">
-                <button className="icon-btn btn-undo" onClick={() => { playClick(); nextProject(); }}>
+                <button className="icon-btn btn-undo" onClick={() => { playClick(); previousProject(); }}>
                     <img src={flecheGauche} alt="Projet précédent" />
                 </button>
 
@@ -566,14 +676,20 @@ const MaPage = ({
 
                 <button
                     className="icon-btn btn-like"
-                    onClick={() => swipe("right")}
+                    onClick={() => {
+                        swipe("right");
+                        likeProject(currentProject._id);
+                    }}
                 >
                     <img src={iconeCoeur} alt="Cœur" />
                 </button>
 
                 <button
                     className="icon-btn btn-dislike"
-                    onClick={() => swipe("left")}
+                    onClick={() => {
+                        swipe("left");
+                        dislikeProject(currentProject._id);
+                    }}
                 >
                     <img src={croix} alt="Croix" />
                 </button>

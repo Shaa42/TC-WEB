@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 const uploadsBaseURL = "http://localhost:8080/uploads/"
@@ -110,6 +112,70 @@ func PostProjects(client *mongo.Client) gin.HandlerFunc {
 	}
 }
 
+func PostLike(client *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := bson.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "ID de projet invalide"})
+			return
+		}
+
+		collection := client.Database("tc-web").Collection("projects")
+
+		// Utilisation de $inc pour augmenter le compteur de 1
+		result, err := collection.UpdateOne(
+			context.TODO(),
+			bson.M{"_id": objID},
+			bson.M{"$inc": bson.M{"like": 1}},
+		)
+
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Erreur lors du like"})
+			return
+		}
+
+		if result.MatchedCount == 0 {
+			c.JSON(404, gin.H{"error": "Projet introuvable"})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "Like enregistré", "id": id})
+	}
+}
+
+func PostDislike(client *mongo.Client) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		objID, err := bson.ObjectIDFromHex(id)
+		if err != nil {
+			c.JSON(400, gin.H{"error": "ID de projet invalide"})
+			return
+		}
+
+		collection := client.Database("tc-web").Collection("projects")
+
+		// Utilisation de $inc pour augmenter le compteur de dislike
+		result, err := collection.UpdateOne(
+			context.TODO(),
+			bson.M{"_id": objID},
+			bson.M{"$inc": bson.M{"dislike": 1}},
+		)
+
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Erreur lors du dislike"})
+			return
+		}
+
+		if result.MatchedCount == 0 {
+			c.JSON(404, gin.H{"error": "Projet introuvable"})
+			return
+		}
+
+		c.JSON(200, gin.H{"message": "Dislike enregistré", "id": id})
+	}
+}
+
 func GetLabels(client *mongo.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		labels, err := FetchDistinctLabels(client)
@@ -129,4 +195,25 @@ func parseLabelSelections(c *gin.Context) []string {
 		}
 	}
 	return NormalizeLabels(labels)
+}
+
+func updateProjectCounter(client *mongo.Client, projectID string, field string, delta int) (bson.M, error) {
+	objID, err := bson.ObjectIDFromHex(projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	collection := client.Database("tc-web").Collection("projects")
+	result := collection.FindOneAndUpdate(
+		context.Background(),
+		bson.M{"_id": objID},
+		bson.M{"$inc": bson.M{field: delta}},
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
+	)
+
+	var updated bson.M
+	if err := result.Decode(&updated); err != nil {
+		return nil, err
+	}
+	return updated, nil
 }
