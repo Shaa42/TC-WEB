@@ -256,9 +256,8 @@ const MaPage = ({
         if (dir === "right") {
             playLikeSound();
         } else if (dir === "left") {
-		playHUHSound();
-	}
-        }
+        playHUHSound();
+    }
         await handleSwipeApi(dir, project);
     };
 
