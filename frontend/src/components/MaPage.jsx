@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/MaPage.css";
 import "../styles/modal-styles.css";
 import LikeAudio from "../assets/likeaudio.mp3";
+import HUHAudio from "../assets/HUHaudio.mp3";
+import ClickAudio from "../assets/clickaudio.mp3";
 import { api } from "../api/client";
 
 // Import des assets
@@ -63,9 +65,31 @@ const MaPage = ({
             .catch((err) => console.error("Audio failed : ", err));
     };
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleModal = () => setIsModalOpen(!isModalOpen);
+    const playClick = () => {
+	const audio = new Audio(ClickAudio);
+	audio
+	    .play()
+	    .then(() => console.log("Audio success"))
+	    .catch((err) => console.error("Audio failed : ", err));
+    };
+
+    const playHUHSound = () => {
+        const audio = new Audio(HUHAudio);
+        audio
+            .play()
+            .then(() => {
+                console.log("Audio success");
+                setTimeout(() => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }, 2000);
+            })
+            .catch((err) => console.error("Audio failed : ", err));
+    };
+    const toggleMenu = () => { playClick(); setIsMenuOpen(!isMenuOpen); };
+    const toggleModal = () => { playClick(); setIsModalOpen(!isModalOpen); };
     const handleClearFilters = () => {
+	playClick();
         if (typeof onClearFilters === "function") {
             onClearFilters();
         }
@@ -87,7 +111,7 @@ const MaPage = ({
             }
         });
 
-        fetch(url.toString())
+        fetch(url.toString())    
             .then((res) => {
                 if (!res.ok) {
                     throw new Error(`Erreur serveur: ${res.status}`);
@@ -231,6 +255,9 @@ const MaPage = ({
     const handleCardSwipe = async (dir, project) => {
         if (dir === "right") {
             playLikeSound();
+        } else if (dir === "left") {
+		playHUHSound();
+	}
         }
         await handleSwipeApi(dir, project);
     };
@@ -258,7 +285,7 @@ const MaPage = ({
                     <p className="state-message error">{error}</p>
                     <button
                         className="retry-btn"
-                        onClick={() => window.location.reload()}
+                        onClick={() => { playClick(); window.location.reload(); }}
                     >
                         Réessayer
                     </button>
@@ -284,6 +311,7 @@ const MaPage = ({
                         <a
                             href="#Deposer"
                             onClick={(e) => {
+				playClick();
                                 e.preventDefault();
                                 onNavigate("submit");
                             }}
@@ -293,6 +321,7 @@ const MaPage = ({
                         <a
                             href="#Classement"
                             onClick={(e) => {
+				playClick();
                                 e.preventDefault();
                                 onNavigate("leaderboard");
                             }}
@@ -302,6 +331,7 @@ const MaPage = ({
                         <a
                             href="#Filtrage"
                             onClick={(e) => {
+				playClick();
                                 e.preventDefault();
                                 onNavigate("filter");
                             }}
@@ -336,7 +366,7 @@ const MaPage = ({
                     ) : (
                         <button
                             className="submit-project-btn"
-                            onClick={() => onNavigate("submit")}
+                            onClick={() => { playClick(); onNavigate("submit"); }}
                         >
                             Déposer un projet
                         </button>
@@ -366,6 +396,7 @@ const MaPage = ({
                             href="#Déposer"
                             onClick={(e) => {
                                 e.preventDefault();
+                                playClick();
                                 onNavigate("submit");
                             }}
                         >
@@ -375,6 +406,7 @@ const MaPage = ({
                             href="#Classement"
                             onClick={(e) => {
                                 e.preventDefault();
+                                playClick();
                                 onNavigate("leaderboard");
                             }}
                         >
@@ -384,6 +416,7 @@ const MaPage = ({
                             href="#Filtrage"
                             onClick={(e) => {
                                 e.preventDefault();
+                                playClick();
                                 onNavigate("filter");
                             }}
                         >
@@ -415,7 +448,7 @@ const MaPage = ({
                     ) : (
                         <button
                             className="submit-project-btn"
-                            onClick={() => onNavigate("submit")}
+                            onClick={() => { playClick(); onNavigate("submit"); }}
                         >
                             Déposer un projet
                         </button>
@@ -442,6 +475,7 @@ const MaPage = ({
                         href="#Déposer"
                         onClick={(e) => {
                             e.preventDefault();
+                            playClick();
                             onNavigate("submit");
                         }}
                     >
@@ -452,6 +486,7 @@ const MaPage = ({
                         href="#Classement"
                         onClick={(e) => {
                             e.preventDefault();
+                            playClick();
                             onNavigate("leaderboard");
                         }}
                     >
@@ -461,6 +496,7 @@ const MaPage = ({
                         href="#Filtrage"
                         onClick={(e) => {
                             e.preventDefault();
+                            playClick();
                             onNavigate("filter");
                         }}
                     >
@@ -491,7 +527,7 @@ const MaPage = ({
                     <div className="filter-actions">
                         <button
                             className="filter-link"
-                            onClick={() => onNavigate("filter")}
+                            onClick={() => { playClick(); onNavigate("filter"); }}
                         >
                             Modifier
                         </button>
@@ -630,11 +666,11 @@ const MaPage = ({
             )}
 
             <footer className="icon-bar">
-                <button className="icon-btn btn-undo" onClick={previousProject}>
+                <button className="icon-btn btn-undo" onClick={() => { playClick(); previousProject(); }}>
                     <img src={flecheGauche} alt="Projet précédent" />
                 </button>
 
-                <button className="icon-btn btn-undo" onClick={nextProject}>
+                <button className="icon-btn btn-undo" onClick={() => { playClick(); nextProject(); }}>
                     <img src={flecheDroite} alt="Projet suivant" />
                 </button>
 
